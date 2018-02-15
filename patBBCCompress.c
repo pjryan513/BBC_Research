@@ -10,7 +10,7 @@
 #include "BBCUtil.h"
 #include "BBCCompressor.h"
 
-compressResult * bbcCompress(unsigned char * to_compress, int size){
+compressResult * patBBCCompress(unsigned char * to_compress, int size){
 
   //these methods gather information from the header
 

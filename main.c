@@ -45,13 +45,15 @@ int main(int argc, char * args[])
 	}
 	printf("\n");
 
-	compressResult * compressed = bbcCompress(to_compress, arr_size);
+	compressResult * og_Compress = bbcCompress(to_compress, arr_size);
+
+	compressResult * newCompress = patBBCCompress(to_compress, arr_size);
 
 	printf("the compressed seq:\n");
-	for(i=0; i < compressed->size; i++)
+	for(i=0; i < og_Compress->size; i++)
 	{
-		printf("%u", compressed->compressed_seq[i]);
-		if(i < compressed->size -1)
+		printf("%u", og_Compress->compressed_seq[i]);
+		if(i < og_Compress->size -1)
 		{
 			printf(", ");
 		}

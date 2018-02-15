@@ -93,21 +93,11 @@ void startNewRun(blockSeg *param){
   //This ensures that we aren't starting from the very first byte of the block
   //otherwise this would write a 0-byte to the file before anything else.
   if(param->curr_run[0] != 0){
-    printf("*************** Startnewrun ****************\n");
-    //fwrite(param->curr_run, sizeof(byte), param->curr_size+1, param->colFile);
-
-    param->compress->size = param->curr_size +1;
-
-    param->compress->compressed_seq = (unsigned char *) realloc(param->compress->compressed_seq,sizeof(unsigned char) * param->compress->size);
-    //printf("here \n");
-    int i;
-    for(i = 0; i < param->curr_size; i++)
-    {
-      param->compress->compressed_seq[i + param->curr_size] = param->curr_run[i];
-    }
+    storeCompress(param);
   }
   //free(param->curr_run);
   param->curr_size = 0;
+  param->curr_run_size= 0;
   //fwrite(param->curr_run, sizeof(char), param->curr_size, param->colFile);
   //ZERO FILL
   //there's only one possible byte we should produce TYPE_1
@@ -156,7 +146,11 @@ void startNewRun(blockSeg *param){
     param->fill_len = 0;
     param->tail_len = 1;
     param->run_type = TYPE_1;
+
+    param->curr_run_size++;
   }
+
+  param->curr_run_size++;
 }
 
 //changes the run type (either type 1 to 2, 3 to 4, or 1 to 3)
@@ -186,6 +180,8 @@ void changeRunType(unsigned int run_type, blockSeg *param){
     //param->fill_len = 4;
     param->curr_size++; //increments size of byte array to allow for first counter byte
     param->curr_run[param->curr_size] = (byte)param->fill_len; //sets counter byte to fill_len
+
+    param->curr_run_size++;
   }
 
   /*this only happens if we are already a TYPE_3 run AND the
@@ -243,6 +239,8 @@ void incrementFill(blockSeg *param){
       param->curr_size++;
       param->curr_run[param->curr_size] = 1;
       param->fill_len++;
+
+      param->curr_run_size++;
     }
   }
 }
@@ -269,11 +267,28 @@ void incrementTail(blockSeg *param){
     param->curr_size++; //increment the length of the current run
     param->curr_run[0] = param->header;
     param->curr_run[param->curr_size] = param->next_byte; //concatenate the literal byte to the current run array
+
+    param->curr_run_size++;
   }
-
-
-
 }
+
+void storeCompress(blockSeg * param)
+{
+    //fwrite(param->curr_run, sizeof(byte), param->curr_size+1, param->colFile);
+    
+    int old_size = param->compress->size;
+    param->compress->size += param->curr_run_size;
+
+    param->compress->compressed_seq = (unsigned char *) realloc(param->compress->compressed_seq,sizeof(unsigned char) * param->compress->size);
+
+    int i;
+    int j;
+    for(i = old_size, j = 0; i < param->compress->size; i++, j++)
+    {
+      param->compress->compressed_seq[i] = param->curr_run[j];
+    }
+}
+
 
 void printBlock(blockSeg *param)
 {
@@ -284,6 +299,20 @@ void printBlock(blockSeg *param)
   printf("byte_type is: %u\n", param->byte_type);
   printf("header is %u\n", param->header);
   printf("curr_size: %u\n", param->curr_size);
+  printf("curr_run_size is: %u\n", param->curr_run_size);
+
+  printf("current compressed data: \n");
+  int i;
+  for(i = 0; i < param->compress->size; i++)
+  {
+    printf("%u", param->compress->compressed_seq[i]);
+
+    if(i < (param->compress->size -1))
+    {
+      printf(", ");
+    }
+  }
+
 
   //printf("compress size %u\n", param->compress->size);
 }
