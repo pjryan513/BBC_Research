@@ -44,20 +44,25 @@ int main(int argc, char * args[])
 		}
 	}
 	printf("\n");
+	printf("size in bytes: %u\n", arr_size);
 
-	compressResult * og_Compress = bbcCompress(to_compress, arr_size);
 
-	compressResult * newCompress = patBBCCompress(to_compress, arr_size);
+	printf("--------	original bbc comrpession:	started	-----------\n\n");
+	compressResult * og_compress = bbcCompress(to_compress, arr_size);
+	printf("--------	original bbc compression:	done	-----------\n\n");
 
-	printf("the compressed seq:\n");
-	for(i=0; i < og_Compress->size; i++)
+	//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
+
+	printf("compressed seq done by original BBC:\n");
+	for(i=0; i < og_compress->size; i++)
 	{
-		printf("%u", og_Compress->compressed_seq[i]);
-		if(i < og_Compress->size -1)
+		printf("%u", og_compress->compressed_seq[i]);
+		if(i < og_compress->size -1)
 		{
 			printf(", ");
 		}
 
 	}
 	printf("\n");	
+	printf("total size in bytes: %u\n", og_compress->size);
 }

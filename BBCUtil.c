@@ -292,7 +292,7 @@ void storeCompress(blockSeg * param)
 
 void printBlock(blockSeg *param)
 {
-
+  printf("PRINT BLOCK: \n");
   printf("fill_len is: %u\n", param->fill_len);
   printf("tail_len is: %u\n", param->tail_len);
   printf("run_type is: %u\n", param->run_type);
@@ -313,6 +313,6 @@ void printBlock(blockSeg *param)
     }
   }
 
-
+  printf("\n\n");
   //printf("compress size %u\n", param->compress->size);
 }

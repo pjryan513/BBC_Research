@@ -192,16 +192,11 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
       //for type 2 and 4 runs
     }
 
-    printf("\n");
-    printBlock(param);
-    printf("\n");
+    //printBlock(param);
   }
 
   storeCompress(param);
 
-  printf("param->header is %u\n", param->header);
-  printf("param->size is %u\n", param->size);
-  printf("writing final run, curr_size %u\n", param->curr_size);
   //fwrite(param->curr_run, sizeof(byte), param->curr_size+1, param->colFile);
   //fclose(param->colFile);
 
