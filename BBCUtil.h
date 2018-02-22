@@ -16,6 +16,8 @@
 #define FILL_LIMIT 3 //maybe????
 #define TAIL_LIMIT 15 //maybe could be 16
 
+#define NEWRUN_STR 0
+
 //typedef unsigned char byte;
 typedef unsigned char byte;
 
@@ -96,6 +98,8 @@ void placeOddBit(blockSeg *param);
 void incrementFill(blockSeg *param);
 
 void getByteType(blockSeg *param);
+
+void setExpoStore(blockSeg *param);
 
 void incrementTail(blockSeg *param);
 

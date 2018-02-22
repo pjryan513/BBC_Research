@@ -222,7 +222,17 @@ void incrementFill(blockSeg *param){
   //increments counter bytes
   if(param->run_type == TYPE_3){
     //continue incrementing current counter byte
-    if(param->curr_run[param->curr_size] < 127){
+
+    param->fill_len++;
+
+
+
+
+    ////////////////////////////////////////////
+    //            The old way                 //
+    ////////////////////////////////////////////
+
+    /*if(param->curr_run[param->curr_size] < 127){
       //printf("incrementing counter byte\n");
       param->curr_run[param->curr_size]++;
       //printf("param->curr_run[param->curr_size] = %x\n", param->curr_run[param->curr_size]);
@@ -242,7 +252,13 @@ void incrementFill(blockSeg *param){
 
       param->curr_run_size++;
     }
+    */
   }
+}
+
+void setExpoStore(blockSeg *param)
+{
+  
 }
 
 
@@ -253,7 +269,7 @@ void incrementTail(blockSeg *param){
 
   if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
   {
-    printf("ERROR: trying to incrementing tail when run type is of type 2 or 4!!!");
+    printf("ERROR: trying to incrementing tail when run type is of type 2 or 4");
   }
   else
   {

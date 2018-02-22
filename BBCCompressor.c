@@ -91,10 +91,10 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
     if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
     {
       //printf("SETTING HEADER TO 0 TYPE 2 OR 4\n");
-      param->header = 0;
+      param->header = NEWRUN_STR;
     }
 
-    if(param->header != 0){
+    if(param->header != NEWRUN_STR){
       if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE){
 
         //proper type of fill (0 or 1)
@@ -120,7 +120,7 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
 
         }
         else{ //if it's not the right kind of fill, start a new run
-          param->header = 0;
+          param->header = NEWRUN_STR;
           //startNewRun(param);
         }
       //odd byte (Eg: 00010000 or 111110111)
@@ -144,24 +144,33 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
           }
           else if(param->run_type == TYPE_3){
 
+            setExpoStore(param);            
+            param->header = NEWRUN_STR;
+
+            ////////////////////////////////
+            //          old code          //
+            ////////////////////////////////
+
             //change ourselves to a TYPE_4 run
             //this will end the current run
-            changeRunType(TYPE_4, param);
-            placeOddBit(param);
+
+            /*changeRunType(TYPE_4, param);
+            placeOddBit(param);*/
+
           }
         /*if we already have a tail, we must start a new run using
         the ODD_BYTE*/
         //the startNewRun() function checks for this specific case
         }
         else{
-          param->header = 0;
+          param->header = NEWRUN_STR;
           //startNewRun(param);
         }
       }
       else if(param->byte_type==MESSY_BYTE){ //messy byte (Ex: 11010100)
 
         //if we are a TYPE_1 run
-        if(param->run_type == TYPE_1 || param->run_type == TYPE_3){
+        if(param->run_type == TYPE_1){
 
           if(param->tail_len < TAIL_LIMIT){
 
@@ -175,16 +184,21 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
           //the startNewRun() function checks for this specific case
 
           else{
-            param->header = 0;
+            param->header = NEWRUN_STR;
             //startNewRun(param);
           }
+        }
+        else if(param->run_type == TYPE_3)
+        {
+          setExpoStore(param);
+          param->header = NEWRUN_STR;
         }
       }
     }
     //if the header is 0 and we're not on the last word of the block, start a new run.
     //printf("param->header before second if :::: %x\n", param->header);
     //if the header is 0 and we're not on the last word of the block, start a new run.
-    if(param->header == 0){ //if any part of the above code caused a new run to be need this will start that new run //&& i != param->size-1
+    if(param->header == NEWRUN_STR){ //if any part of the above code caused a new run to be need this will start that new run //&& i != param->size-1
       //printf("param->header was 0?\n");
       startNewRun(param);
     }
