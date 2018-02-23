@@ -223,16 +223,7 @@ void incrementFill(blockSeg *param){
   if(param->run_type == TYPE_3){
     //continue incrementing current counter byte
 
-    param->fill_len++;
-
-
-
-
-    ////////////////////////////////////////////
-    //            The old way                 //
-    ////////////////////////////////////////////
-
-    /*if(param->curr_run[param->curr_size] < 127){
+    if(param->curr_run[param->curr_size] < 127){
       //printf("incrementing counter byte\n");
       param->curr_run[param->curr_size]++;
       //printf("param->curr_run[param->curr_size] = %x\n", param->curr_run[param->curr_size]);
@@ -252,7 +243,7 @@ void incrementFill(blockSeg *param){
 
       param->curr_run_size++;
     }
-    */
+    
   }
 }
 

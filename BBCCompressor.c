@@ -144,18 +144,10 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
           }
           else if(param->run_type == TYPE_3){
 
-            setExpoStore(param);            
-            param->header = NEWRUN_STR;
-
-            ////////////////////////////////
-            //          old code          //
-            ////////////////////////////////
-
             //change ourselves to a TYPE_4 run
             //this will end the current run
-
-            /*changeRunType(TYPE_4, param);
-            placeOddBit(param);*/
+            changeRunType(TYPE_4, param);
+            placeOddBit(param);
 
           }
         /*if we already have a tail, we must start a new run using
@@ -170,7 +162,7 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
       else if(param->byte_type==MESSY_BYTE){ //messy byte (Ex: 11010100)
 
         //if we are a TYPE_1 run
-        if(param->run_type == TYPE_1){
+        if(param->run_type == TYPE_1 || param->run_type == TYPE_3){
 
           if(param->tail_len < TAIL_LIMIT){
 
@@ -187,11 +179,6 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
             param->header = NEWRUN_STR;
             //startNewRun(param);
           }
-        }
-        else if(param->run_type == TYPE_3)
-        {
-          setExpoStore(param);
-          param->header = NEWRUN_STR;
         }
       }
     }
