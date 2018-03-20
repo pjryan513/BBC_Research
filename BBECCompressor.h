@@ -1,7 +1,7 @@
 //BBCCompressor.h
 
-#ifndef BBEC_COMPRESSOR
-#define BBEC_COMPRESSOR
+#ifndef BBC_COMPRESSOR
+#define BBC_COMPRESSOR
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -11,11 +11,11 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "BBECUtil.h"
-#include "BBECCompressor.h"
+#include "BBCUtil.h"
+#include "BBCCompressor.h"
 
 
 
-compressResult * bbecCompress(byte *to_compress, int size);
+compressResult * bbcCompress(byte *to_compress, int size);
 
 #endif

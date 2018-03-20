@@ -22,6 +22,11 @@
 //typedef unsigned char byte;
 typedef unsigned char byte;
 
+typedef struct baseExpo{
+	unsigned int base;
+	unsigned int exponent;
+} baseExpo;
+
 typedef struct compressResult {
 	unsigned char *compressed_seq;
 	int size;
