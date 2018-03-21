@@ -248,24 +248,37 @@ void setExpoStore(blockSeg *param)
 //This funtion should only be used for types 1 and 3 where the tail length is guaranteed to be the last 4 bits of the header
 void incrementTail(blockSeg *param){
 
-  if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
+  if(param->run_type == TYPE_2)
   {
-    printf("ERROR: trying to incrementing tail when run type is of type 2 or 4");
+    printf("ERROR: trying to incrementing tail when run type is of type 2");
   }
   else
   {
     param->tail_len++;
     byte temp = param->tail_len;
-    //temp <<= 4; //clear first half of temp, use left shift bitwise operation by 4
-    //temp >>= 4; //move tail bits to LSBs position in temp, this way we can view the actual value of the tail length, use right shitf bitwise operation by 4
-    param->header >>= 4; //clear out the old tail length bits from header
-    param->header <<= 4; //shift it back
-    param->header |= temp; //add the new tail length to header using an or bitwise operation
+
+    if(param->run_type == TYPE_1)
+    {
+      param->header >>= 4; //clear out the old tail length bits from header
+      param->header <<= 4; //shift it back
+      param->header |= temp; //add the new tail length to header using an or bitwise operation
+
+      //temp <<= 4; //clear first half of temp, use left shift bitwise operation by 4
+      //temp >>= 4; //move tail bits to LSBs position in temp, this way we can view the actual value of the tail length, use right shitf bitwise operation by 4
+    }
+    else if(param->run_type == TYPE_4)
+    {
+      param->header >>= 3;
+      param->header <<= 3;
+      param->header |= temp;
+    }
+    
+    
     param->curr_size++; //increment the length of the current run
     param->curr_run[0] = param->header;
     param->curr_run[param->curr_size] = param->next_byte; //concatenate the literal byte to the current run array
 
-    param->curr_run_size++;
+    param->curr_run_size++;// increment the overall run size...really need to name these better...
   }
 }
 

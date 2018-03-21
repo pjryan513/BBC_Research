@@ -127,7 +127,7 @@ compressResult * BBECCompress(unsigned char * to_compress, int size){
       }
       else if(param->byte_type==ODD_BYTE){ //if we have an odd one or zero bit in an otherwise fill worthy byte
         /*if the tail_length is 0, we can easily change to
-        //FILL_MATCH to determine the value
+        FILL_MATCH to determine the value
         either a TYPE_2 or TYPE_4 run by concatenating the
         ODD_BYTE to the end of our fill. */
         if(param->tail_len == 0 && param->fill_match == param->fill_bit){
@@ -152,7 +152,7 @@ compressResult * BBECCompress(unsigned char * to_compress, int size){
       else if(param->byte_type==MESSY_BYTE){ //messy byte (Ex: 11010100)
 
         //if we are a TYPE_1 run
-        if(param->run_type == TYPE_1 || param->run_type == TYPE_3){
+        if(param->run_type == TYPE_1){
 
           if(param->tail_len < TAIL_LIMIT){
 
