@@ -96,6 +96,8 @@ typedef struct runData {
 	//The header of the current run, this is meta data that tells information about the compressed run it represents
 	byte header;
 
+	byte *tail_store;
+
 	//Pointer to the struture that keeps track of the output information for the compression algorithm.
 	//This structure is what will be returned at the end of the algorithm
 	compressResult * compress;

@@ -72,6 +72,88 @@ int updateRun(runData *param)
   return 1;
 }
 
+int findOddPos(byte oddByte, unsigned int fill_bit)
+{
+  if(fill_bit == ZERO_BYTE)
+  {
+    int i;
+    int expo = 1;
+    for(i = 0; i < 8; i++)
+    {
+      if(oddByte == expo)
+      {
+        return i;
+      }
+      expo *2;
+    }
+  }
+  else if(fill_bit == ONE_BYTE)
+  {
+
+  }
+}
+
+void storeCompress(runData *param)
+{
+  if(param->run_type == TYPE_1)
+  {
+    //blank type 1 header
+    byte header = TYPE_1_HEADER;
+
+    //add fill bit
+    byte temp = fill_bit;
+    temp <<= 7;
+    header |= temp;
+
+    //add fill len
+    temp = fill_len;
+    temp <<= 4;
+    header |= temp;
+
+    //add tail len
+    header |= tail_len;
+
+    int newsize = param->compress->compress_seq + 1 + fill_len;
+
+    realloc(param->compress->compress_seq, sizeof(byte*) * newsize);
+
+    param->compress->compressed_seq[param->compress->size] = header; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
+    param->compress->size++;
+
+    int i;
+    for(i = 0; i < tail_len; i++)
+    {
+      param->compress->compressed_seq[param->compress->size] = param->tail_store[i];
+      param->compress->size++;
+    }
+  }
+  else if(param->run_type == TYPE_2)
+  {
+    //blank type 2 header
+    byte header = TYPE_2_HEADER;
+
+    //add fill bit
+    byte temp = fill_bit;
+    temp <<= 6;
+    header |= temp;
+
+    //add fill len
+    temp = fill_len;
+    temp <<= 2;
+    header |= temp;
+
+    //add odd pos
+    int odd_pos = findOddPos(param->next_byte);
+    header |= odd_pos;
+
+    realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1))
+  }
+  else if(param->run_type == TYPE_3)
+  {
+
+  }
+}
+
 int endRun(runData *param)
 {
   if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
@@ -109,55 +191,12 @@ int endRun(runData *param)
   return 1;
 }
 
-void storeCompress(runData *param)
-{
-  if(param->run_type == TYPE_1)
-  {
-    //blank type 1 header
-    byte header = TYPE_1_HEADER;
-
-    //add fill bit
-    byte temp = fill_bit;
-    temp <<= 7;
-    header |= temp;
-
-    //add fill len
-    temp = fill_len;
-    temp <<= 4;
-    header |= temp;
-
-    //add tail len
-    header |= tail;
-
-    param->compress->compressed_seq[param->compress->size]; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
-    param->compress->size++;
-  }
-  else if(param->run_type == TYPE_2)
-  {
-    //blank type 2 header
-    byte header = TYPE_2_HEADER;
-
-    //add fill bit
-    byte temp = fill_bit;
-    temp <<= 6;
-    header |= temp;
-
-    //add fill len
-    temp = fill_len;
-    temp <<= 2;
-    header |= temp;
-
-    //add odd pos
-    int odd_pos = findOddPos(param->next_byte);
-  }
-}
-
 //////////////////////////////////////////////////
 //                  main function               //
 //////////////////////////////////////////////////
 
 
-compressResult * bbcCompress(unsigned char * to_compress, int size){
+compressResult * bbcCompress(byte * to_compress, int size){
 
   //these methods gather information from the header
 
@@ -167,13 +206,14 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
   param->toCompress = to_compress;
 
   param->compress = (compressResult *) malloc(sizeof(compressResult));
-  param->compress->compressed_seq = (unsigned char *) malloc(sizeof(unsigned char));
+  param->compress->compressed_seq = (byte *) malloc(sizeof(byte));
   param->compress->size = 0;
 
   int i;
 
   //This array will hold the result of the compression algorithm
-  param->curr_run = (byte*) malloc(sizeof(byte)*size);
+  //param->curr_run = (byte*) malloc(sizeof(byte)*size);
+  
   //The size of curr_run array
   
   for(i = 0; i < param->size; i++)
@@ -188,9 +228,9 @@ compressResult * bbcCompress(unsigned char * to_compress, int size){
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
-    updateRun(param);
-
     endRun(param);
+
+    updateRun(param);
 
     if(param->byte_type == ZERO_BYTE)
     {
