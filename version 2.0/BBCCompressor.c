@@ -93,6 +93,14 @@ int findOddPos(byte oddByte, unsigned int fill_bit)
   }
 }
 
+byte * fillStore(unsigned int fill_len, byte fill_bit)
+{
+  while(fill_len > FILL_LIMIT_TYPE_3)
+  {
+    
+  }
+}
+
 void storeCompress(runData *param)
 {
   if(param->run_type == TYPE_1)
@@ -133,7 +141,7 @@ void storeCompress(runData *param)
     byte header = TYPE_2_HEADER;
 
     //add fill bit
-    byte temp = fill_bit;
+    byte temp = param->fill_bit;
     temp <<= 6;
     header |= temp;
 
@@ -150,7 +158,19 @@ void storeCompress(runData *param)
   }
   else if(param->run_type == TYPE_3)
   {
+    //blank type 3 header
+    byte header = TYPE_3_HEADER;
 
+    //add fill bit
+    byte temp = param->fill_bit;
+    //001x | xxxx
+    temp <<= 5;
+    header |= temp;
+
+    //add tail
+    header |= param->tail_len;
+
+    byte *fill = fillStore(param->fill_len, param->fill_bit);
   }
 }
 

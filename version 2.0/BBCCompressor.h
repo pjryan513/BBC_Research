@@ -27,6 +27,7 @@
 #define FILL_LIMIT 3 //maybe????
 #define TAIL_LIMIT 15 //maybe could be 16
 #define TAIL_LIMIT_TYPE_4 8
+#define FILL_LIMIT_TYPE_3 127
 
 #define TYPE_1_HEADER 128
 #define TYPE_2_HEADER 64
