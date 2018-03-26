@@ -93,12 +93,38 @@ int findOddPos(byte oddByte, unsigned int fill_bit)
   }
 }
 
-byte * fillStore(unsigned int fill_len, byte fill_bit)
+compressResult * fillStore(unsigned int fill_len, byte fill_bit)
 {
+  int i = 0;
+  byte * fill = malloc(sizeof(byte*));
   while(fill_len > FILL_LIMIT_TYPE_3)
   {
-    
+    byte fillbyte = FULL_FILL;
+    realloc(fill, sizeof(byte *) * (i +1));
+    fill[i] = FULL_FILL;
+
+    fill_len -= FILL_LIMIT_TYPE_3; //Even though FULL_FILL is 255 we subtract 127 because only 7-bits are used for storage FSB is used to tell if more fill storage follows
+    i++;
   }
+
+  if(fill_len > 0)
+  {
+    realloc(fill, sizeof(byte*) * (i+1));
+    fill[i] = fill_len;
+    i++;
+  }
+
+  compressResult fill_done = malloc(sizeof(compressResult *));
+  fill_done->compress_seq = fill;
+  fill_done->size = i;
+  return fill_done;
+}
+
+void addCompressSeq(runData *param, byte toAdd)
+{
+  realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1));
+  param->compress->compressed_seq[param->compress->size] = header; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
+  param->compress->size++;
 }
 
 void storeCompress(runData *param)
@@ -121,18 +147,12 @@ void storeCompress(runData *param)
     //add tail len
     header |= tail_len;
 
-    int newsize = param->compress->compress_seq + 1 + fill_len;
-
-    realloc(param->compress->compress_seq, sizeof(byte*) * newsize);
-
-    param->compress->compressed_seq[param->compress->size] = header; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
-    param->compress->size++;
+    addCompressSeq(param, header);
 
     int i;
     for(i = 0; i < tail_len; i++)
     {
-      param->compress->compressed_seq[param->compress->size] = param->tail_store[i];
-      param->compress->size++;
+      addCompressSeq(param, param->tail_store[i]);
     }
   }
   else if(param->run_type == TYPE_2)
@@ -154,7 +174,7 @@ void storeCompress(runData *param)
     int odd_pos = findOddPos(param->next_byte);
     header |= odd_pos;
 
-    realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1))
+    addCompressSeq(param, header);
   }
   else if(param->run_type == TYPE_3)
   {
@@ -170,7 +190,41 @@ void storeCompress(runData *param)
     //add tail
     header |= param->tail_len;
 
-    byte *fill = fillStore(param->fill_len, param->fill_bit);
+    addCompressSeq(param, header);
+
+    compressResult *3_fill = fillStore(param->fill_len, param->fill_bit);
+    int i;
+    for(i = 0; i < 3_fill->size; i++)
+    {
+      addCompressSeq(param, 3_fill[i]);
+    }
+    free(3_fill->compressed_seq);
+    free(3_fill);
+
+    for(i = 0; i < tail_len; i++)
+    {
+      addCompressSeq(param, param->tail_store[i]);
+    }
+  }
+  else if(param->run_type == TYPE_4)
+  {
+    byte header = TYPE_4_HEADER;
+
+    byte temp = param->fill_bit;
+    temp <<= 4;
+    header |= temp;
+
+    int odd_pos = findOddPos(param->next_byte);
+    header |= odd_pos;
+
+    compress *4_fill = fillStore(param->fill_len, param->fill_bit);
+    int i;
+    for(i = 0; i < 3_fill->size; i++)
+    {
+      addCompressSeq(param, 3_fill[i]);
+    }
+    free(3_fill->compressed_seq);
+    free(3_fill);
   }
 }
 

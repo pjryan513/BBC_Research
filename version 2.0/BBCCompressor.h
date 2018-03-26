@@ -29,6 +29,8 @@
 #define TAIL_LIMIT_TYPE_4 8
 #define FILL_LIMIT_TYPE_3 127
 
+#define FULL_FILL 255
+
 #define TYPE_1_HEADER 128
 #define TYPE_2_HEADER 64
 #define TYPE_3_HEADER 32
@@ -48,7 +50,7 @@ typedef struct compressResult {
 typedef unsigned char byte;
 
 typedef struct compressResult {
-	unsigned char *compressed_seq;
+	byte *compressed_seq;
 	int size;
 } compressResult;
 
