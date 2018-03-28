@@ -80,7 +80,6 @@ int findOddPos(byte oddByte, unsigned int fill_bit)
     int expo = 1;
     for(i = 0; i < 8; i++)
     {
-
       if(oddByte == expo || oddByte == (255 - expo))
       {
         return i;
