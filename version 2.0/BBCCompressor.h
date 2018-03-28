@@ -77,6 +77,8 @@ typedef struct runData {
 	//the type of the run can be changed during the compressing
 	unsigned int run_type;
 
+	unsigned int odd_pos;
+
 	//This is used to compare a new byte to compress to the fill_bit of the current run
 	//will either be 0 or 1
 	byte fill_match;

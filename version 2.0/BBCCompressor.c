@@ -80,16 +80,14 @@ int findOddPos(byte oddByte, unsigned int fill_bit)
     int expo = 1;
     for(i = 0; i < 8; i++)
     {
-      if(oddByte == expo)
+
+      if(oddByte == expo || oddByte == (255 - expo))
       {
         return i;
       }
+
       expo *2;
     }
-  }
-  else if(fill_bit == ONE_BYTE)
-  {
-
   }
 }
 
@@ -125,6 +123,11 @@ void addCompressSeq(runData *param, byte toAdd)
   realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1));
   param->compress->compressed_seq[param->compress->size] = header; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
   param->compress->size++;
+}
+
+void startNewRun(runData * param)
+{
+
 }
 
 void storeCompress(runData *param)
@@ -171,8 +174,7 @@ void storeCompress(runData *param)
     header |= temp;
 
     //add odd pos
-    int odd_pos = findOddPos(param->next_byte);
-    header |= odd_pos;
+    header |= param->odd_pos;
 
     addCompressSeq(param, header);
   }
@@ -214,8 +216,7 @@ void storeCompress(runData *param)
     temp <<= 4;
     header |= temp;
 
-    int odd_pos = findOddPos(param->next_byte);
-    header |= odd_pos;
+    header |= param->odd_pos;
 
     compress *4_fill = fillStore(param->fill_len, param->fill_bit);
     int i;
@@ -302,10 +303,6 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
-    endRun(param);
-
-    updateRun(param);
-
     if(param->byte_type == ZERO_BYTE)
     {
 
@@ -322,6 +319,10 @@ compressResult * bbcCompress(byte * to_compress, int size){
     {
 
     }
+
+    endRun(param);
+
+    updateRun(param);
 
   }
   free(param->curr_run);
