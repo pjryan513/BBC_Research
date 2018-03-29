@@ -126,7 +126,20 @@ void addCompressSeq(runData *param, byte toAdd)
 
 void startNewRun(runData * param)
 {
+  param->fill_len = NEWRUN;
+  param->tail_len = NEWRUN;
+  param->header = NEWRUN;
 
+  int i;
+  for(i = 0; i < TAIL_LIMIT; i++)
+  {
+    param->tail_store[i] = NEWRUN;  
+  }
+
+  param->run_type = NEWRUN;
+
+  param->header = 0;
+  
 }
 
 void storeCompress(runData *param)
@@ -302,9 +315,19 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
+    endRun(param);
+
     if(param->byte_type == ZERO_BYTE)
     {
-
+      if(param->run_type == NEWRUN)
+      {
+        param->fill_bit = param->byte_type;
+        param->run_type = TYPE_1;
+      }
+      if(param->byte_type == param->fill_bit)
+      {
+        param->fill_len++;
+      }
     }
     else if(param->byte_type == ONE_BYTE)
     {
@@ -318,8 +341,6 @@ compressResult * bbcCompress(byte * to_compress, int size){
     {
 
     }
-
-    endRun(param);
 
     updateRun(param);
 

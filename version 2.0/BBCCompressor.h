@@ -36,7 +36,7 @@
 #define TYPE_3_HEADER 32
 #define TYPE_4_HEADER 16 
 
-#define NEWRUN_STR 0
+#define TYPE_NEWRUN 0
 
 //typedef unsigned char byte;
 typedef unsigned char byte;
