@@ -19,12 +19,9 @@ void getByteType(runData *param){
   byte b = param->next_byte;
   if(param->next_byte == 0){
     param->byte_type = ZERO_BYTE;
-    param->fill_match = 0;
   }
   else if(param->next_byte == 255){
     param->byte_type = ONE_BYTE;
-    param->fill_match = 1;
-    //param->byte_type = 1;
   }
   //if fill bit == 0, then we can use the ODD OBE BYTE. if the fill bit == 1, then we can use the ODD ZERO BYTE.
   //what if we are starting a new run? (NO FILL BIT DEFINED YET).
@@ -33,12 +30,10 @@ void getByteType(runData *param){
   //if(param->fill_bit == 0){
   else if(b == 1 || b == 2 || b == 4 || b == 8 || b == 16 || b == 32 || b == 64 || b == 128){
     param->byte_type =  ODD_BYTE;
-    param->fill_match = 0;
   }
   //}
   else if(b == 254 || b == 253 || b == 251 || b ==247 || b ==239 || b ==223 || b == 191 || b == 127){
     param->byte_type = ODD_BYTE;
-    param->fill_match = 1;
   }
 
   else{
@@ -119,7 +114,7 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
 void addCompressSeq(runData *param, byte toAdd)
 {
   realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1));
-  param->compress->compressed_seq[param->compress->size] = header; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
+  param->compress->compressed_seq[param->compress->size] = toAdd; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
   param->compress->size++;
 }
 
@@ -135,10 +130,7 @@ void startNewRun(runData * param)
     param->tail_store[i] = NEWRUN;  
   }
 
-  param->run_type = NEWRUN;
-
-  param->header = 0;
-  
+  param->run_type = TYPE_1;
 }
 
 void storeCompress(runData *param)
@@ -150,7 +142,7 @@ void storeCompress(runData *param)
 
     //add fill bit
     byte temp = fill_bit;
-    temp <<= 7;
+    temp <<= 6;
     header |= temp;
 
     //add fill len
@@ -176,12 +168,12 @@ void storeCompress(runData *param)
 
     //add fill bit
     byte temp = param->fill_bit;
-    temp <<= 6;
+    temp <<= 5;
     header |= temp;
 
     //add fill len
     temp = fill_len;
-    temp <<= 2;
+    temp <<= 3;
     header |= temp;
 
     //add odd pos
@@ -197,7 +189,7 @@ void storeCompress(runData *param)
     //add fill bit
     byte temp = param->fill_bit;
     //001x | xxxx
-    temp <<= 5;
+    temp <<= 4;
     header |= temp;
 
     //add tail
@@ -224,19 +216,19 @@ void storeCompress(runData *param)
     byte header = TYPE_4_HEADER;
 
     byte temp = param->fill_bit;
-    temp <<= 4;
+    temp <<= 3;
     header |= temp;
 
     header |= param->odd_pos;
 
     compress *4_fill = fillStore(param->fill_len, param->fill_bit);
     int i;
-    for(i = 0; i < 3_fill->size; i++)
+    for(i = 0; i < 4_fill->size; i++)
     {
-      addCompressSeq(param, 3_fill[i]);
+      addCompressSeq(param, 4_fill[i]);
     }
-    free(3_fill->compressed_seq);
-    free(3_fill);
+    free(4_fill->compressed_seq);
+    free(4_fill);
   }
 }
 
@@ -290,6 +282,9 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
   param->size = size;
   param->toCompress = to_compress;
+  param->run_type = TYPE_1;
+
+  param->tail_store = (byte *) malloc(sizeof(byte) * 15);
 
   param->compress = (compressResult *) malloc(sizeof(compressResult));
   param->compress->compressed_seq = (byte *) malloc(sizeof(byte));
@@ -310,25 +305,35 @@ compressResult * bbcCompress(byte * to_compress, int size){
     //param->colFile = fopen("filewrite/compressed%d.txt", i, "w");
     
     param->next_byte = param->toCompress[i];//get the next byte from the block sequence of bytes
-    //printf("next byte (#%d): %x\n", i, param->next_byte);
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
-    endRun(param);
-
-    if(param->byte_type == ZERO_BYTE || param->byte_type == ONE)
+    if(i > 0)
+    { //done for an end case that only can occur when i == 0
+      endRun(param);
+    }
+    
+    //If the run is new both fill and tail lens will be zero and we need to choose a new fill bit
+    if(param->fill_len <= 0 && param->tail_len <= 0)
     {
-      if(param->run_type == NEWRUN)
+      if(param->byte_type == ONE_BYTE)
       {
         param->fill_bit = param->byte_type;
-        param->fill_bit = TYPE_1;
       }
+      else
+      {
+        param->fill_len = ZERO_BYTE;
+      }
+    }
+
+    if(param->byte_type == ZERO_BYTE || param->byte_type == ONE) //if we are a fill we need to increment fill_len
+    {
       if(param->byte_type == param->fill_bit)
       {
         param->fill_len++;
       }
     }
-    else if(param->byte_type == MESSY_BYTE)
+    else if(param->byte_type == MESSY_BYTE) //if we are a messy we need to increment tail_len
     {
       param->tail_store[param->tail_len] = param->next_byte;
       param->tail_len++;
@@ -338,7 +343,6 @@ compressResult * bbcCompress(byte * to_compress, int size){
     updateRun(param);
 
   }
-  free(param->curr_run);
 
   return param->compress;
 }

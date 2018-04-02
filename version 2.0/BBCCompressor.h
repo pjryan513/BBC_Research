@@ -24,6 +24,9 @@
 #define TYPE_3 2
 #define TYPE_4 3
 
+#define ZERO_BIT 0
+#define ONE_BIT 1
+
 #define FILL_LIMIT 3 //maybe????
 #define TAIL_LIMIT 15 //maybe could be 16
 #define TAIL_LIMIT_TYPE_4 8
@@ -36,8 +39,8 @@
 #define TYPE_3_HEADER 32
 #define TYPE_4_HEADER 16 
 
-#define TYPE_NEWRUN 0
-
+#define NEWRUN 0
+#define ACTIVE_RUN 1
 //typedef unsigned char byte;
 typedef unsigned char byte;
 
@@ -79,10 +82,6 @@ typedef struct runData {
 
 	unsigned int odd_pos;
 
-	//This is used to compare a new byte to compress to the fill_bit of the current run
-	//will either be 0 or 1
-	byte fill_match;
-
 	//The fill_bit is the type of fill we are compressing, can either be 0 or 1
 	//Is determined by the first 0 or 1 fill we encounter
 	byte fill_bit;
@@ -97,9 +96,6 @@ typedef struct runData {
 	//The type of type we are dealing with determines what actions the current run will take
 	//EX: store it, change run_type or start a new run
 	unsigned int byte_type;
-
-	//The header of the current run, this is meta data that tells information about the compressed run it represents
-	byte header;
 
 	byte *tail_store;
 
