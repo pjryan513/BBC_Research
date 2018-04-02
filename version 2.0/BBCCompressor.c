@@ -46,6 +46,21 @@ void getByteType(runData *param){
   }
 }
 
+int findOddPos(byte oddByte, unsigned int fill_bit)
+{
+  int i;
+  int expo = 1;
+  for(i = 0; i < 8; i++)
+  {
+    if(oddByte == expo || oddByte == (255 - expo))
+    {
+      return i;
+    }
+
+     expo *2;
+  }
+}
+
 int updateRun(runData *param)
 {
   if(param->run_type == TYPE_1)
@@ -58,6 +73,7 @@ int updateRun(runData *param)
     else if(param->byte_type == ODD_BYTE)
     {
       param->run_type = TYPE_2;
+      param->odd_pos = findOddPos(param->next_byte, param->fill_bit);
       return 0;
     }
   }
@@ -66,28 +82,11 @@ int updateRun(runData *param)
     if(param->byte_type == ODD_BYTE)
     {
       param->run_type = TYPE_4;
+      param->odd_pos = findOddPos(param->next_byte, param->fill_bit);
       return 0;
     }
   }
   return 1;
-}
-
-int findOddPos(byte oddByte, unsigned int fill_bit)
-{
-  if(fill_bit == ZERO_BYTE)
-  {
-    int i;
-    int expo = 1;
-    for(i = 0; i < 8; i++)
-    {
-      if(oddByte == expo || oddByte == (255 - expo))
-      {
-        return i;
-      }
-
-      expo *2;
-    }
-  }
 }
 
 compressResult * fillStore(unsigned int fill_len, byte fill_bit)
@@ -268,7 +267,7 @@ int endRun(runData *param)
         return 0;
       }
     }
-    else if(param->tail_len >= TAIL_LIMIT)
+    else if(param->tail_len > TAIL_LIMIT)
     {
       storeCompress(param);
       startNewRun(param);
@@ -317,28 +316,22 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     endRun(param);
 
-    if(param->byte_type == ZERO_BYTE)
+    if(param->byte_type == ZERO_BYTE || param->byte_type == ONE)
     {
       if(param->run_type == NEWRUN)
       {
         param->fill_bit = param->byte_type;
-        param->run_type = TYPE_1;
+        param->fill_bit = TYPE_1;
       }
       if(param->byte_type == param->fill_bit)
       {
         param->fill_len++;
       }
     }
-    else if(param->byte_type == ONE_BYTE)
-    {
-
-    }
-    else if(param->byte_type == ODD_BYTE)
-    {
-
-    }
     else if(param->byte_type == MESSY_BYTE)
     {
+      param->tail_store[param->tail_len] = param->next_byte;
+      param->tail_len++;
 
     }
 
