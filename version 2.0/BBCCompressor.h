@@ -11,9 +11,6 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "BBECUtil.h"
-#include "BBECCompressor.h"
-
 #define ZERO_BYTE 0
 #define ONE_BYTE 1
 #define ODD_BYTE 2
@@ -51,11 +48,6 @@ typedef struct compressResult {
 
 //typedef unsigned char byte;
 typedef unsigned char byte;
-
-typedef struct compressResult {
-	byte *compressed_seq;
-	int size;
-} compressResult;
 
 typedef struct runData {
 	//This is the size of the uncompressed block of bytes

@@ -7,7 +7,6 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "BBCUtil.h"
 #include "BBCCompressor.h"
 
 //////////////////////////////////////////////////
@@ -52,8 +51,9 @@ int findOddPos(byte oddByte, unsigned int fill_bit)
       return i;
     }
 
-     expo *2;
+     expo = expo *2;
   }
+  return -1;
 }
 
 int updateRun(runData *param)
@@ -90,7 +90,6 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
   byte * fill = malloc(sizeof(byte*));
   while(fill_len > FILL_LIMIT_TYPE_3)
   {
-    byte fillbyte = FULL_FILL;
     realloc(fill, sizeof(byte *) * (i +1));
     fill[i] = FULL_FILL;
 
@@ -105,15 +104,15 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
     i++;
   }
 
-  compressResult fill_done = malloc(sizeof(compressResult *));
-  fill_done->compress_seq = fill;
+  compressResult * fill_done = (compressResult *) malloc(sizeof(compressResult *));
+  fill_done->compressed_seq = fill;
   fill_done->size = i;
   return fill_done;
 }
 
 void addCompressSeq(runData *param, byte toAdd)
 {
-  realloc(param->compress->compress_seq, sizeof(byte*) * (param->compress->size + 1));
+  realloc(param->compress->compressed_seq, sizeof(byte*) * (param->compress->size + 1));
   param->compress->compressed_seq[param->compress->size] = toAdd; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
   param->compress->size++;
 }
@@ -122,7 +121,6 @@ void startNewRun(runData * param)
 {
   param->fill_len = NEWRUN;
   param->tail_len = NEWRUN;
-  param->header = NEWRUN;
 
   int i;
   for(i = 0; i < TAIL_LIMIT; i++)
@@ -141,22 +139,22 @@ void storeCompress(runData *param)
     byte header = TYPE_1_HEADER;
 
     //add fill bit
-    byte temp = fill_bit;
+    byte temp = param->fill_bit;
     temp <<= 6;
     header |= temp;
 
     //add fill len
-    temp = fill_len;
+    temp = param->fill_len;
     temp <<= 4;
     header |= temp;
 
     //add tail len
-    header |= tail_len;
+    header |= param->tail_len;
 
     addCompressSeq(param, header);
 
     int i;
-    for(i = 0; i < tail_len; i++)
+    for(i = 0; i < param->tail_len; i++)
     {
       addCompressSeq(param, param->tail_store[i]);
     }
@@ -172,7 +170,7 @@ void storeCompress(runData *param)
     header |= temp;
 
     //add fill len
-    temp = fill_len;
+    temp = param->fill_len;
     temp <<= 3;
     header |= temp;
 
@@ -197,16 +195,16 @@ void storeCompress(runData *param)
 
     addCompressSeq(param, header);
 
-    compressResult *3_fill = fillStore(param->fill_len, param->fill_bit);
+    compressResult *three_fill = fillStore(param->fill_len, param->fill_bit);
     int i;
-    for(i = 0; i < 3_fill->size; i++)
+    for(i = 0; i < three_fill->size; i++)
     {
-      addCompressSeq(param, 3_fill[i]);
+      addCompressSeq(param, three_fill->compressed_seq[i]);
     }
-    free(3_fill->compressed_seq);
-    free(3_fill);
+    free(three_fill->compressed_seq);
+    free(three_fill);
 
-    for(i = 0; i < tail_len; i++)
+    for(i = 0; i < param->tail_len; i++)
     {
       addCompressSeq(param, param->tail_store[i]);
     }
@@ -221,14 +219,14 @@ void storeCompress(runData *param)
 
     header |= param->odd_pos;
 
-    compress *4_fill = fillStore(param->fill_len, param->fill_bit);
+    compressResult *four_fill = fillStore(param->fill_len, param->fill_bit);
     int i;
-    for(i = 0; i < 4_fill->size; i++)
+    for(i = 0; i < four_fill->size; i++)
     {
-      addCompressSeq(param, 4_fill[i]);
+      addCompressSeq(param, four_fill->compressed_seq[i]);
     }
-    free(4_fill->compressed_seq);
-    free(4_fill);
+    free(four_fill->compressed_seq);
+    free(four_fill);
   }
 }
 
@@ -326,7 +324,7 @@ compressResult * bbcCompress(byte * to_compress, int size){
       }
     }
 
-    if(param->byte_type == ZERO_BYTE || param->byte_type == ONE) //if we are a fill we need to increment fill_len
+    if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE) //if we are a fill we need to increment fill_len
     {
       if(param->byte_type == param->fill_bit)
       {
