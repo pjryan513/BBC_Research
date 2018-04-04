@@ -99,6 +99,12 @@ typedef struct runData {
 	//struct blockBytes *nextBlock; //the next block of bytes to compress
 } runData; 
 
+int findOddPos(byte oddByte, unsigned int fill_bit);
+
+compressResult * fillStore(unsigned int fill_len, byte fill_bit);
+
+void addCompressSeq(runData *param, byte toAdd);
+
 void getByteType(runData *param);
 
 int updateRun(runData *param);
@@ -109,6 +115,6 @@ void storeCompress(runData *param);
 
 void startNewRun(runData *param);
 
-compressResult * bbecCompress(byte *to_compress, int size);
+compressResult * bbcCompress(byte *to_compress, int size);
 
 #endif

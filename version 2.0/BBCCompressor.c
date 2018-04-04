@@ -90,7 +90,7 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
   byte * fill = malloc(sizeof(byte*));
   while(fill_len > FILL_LIMIT_TYPE_3)
   {
-    realloc(fill, sizeof(byte *) * (i +1));
+    fill = realloc(fill, sizeof(byte *) * (i +1));
     fill[i] = FULL_FILL;
 
     fill_len -= FILL_LIMIT_TYPE_3; //Even though FULL_FILL is 255 we subtract 127 because only 7-bits are used for storage FSB is used to tell if more fill storage follows
@@ -99,7 +99,7 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
 
   if(fill_len > 0)
   {
-    realloc(fill, sizeof(byte*) * (i+1));
+    fill = realloc(fill, sizeof(byte*) * (i+1));
     fill[i] = fill_len;
     i++;
   }
@@ -112,7 +112,7 @@ compressResult * fillStore(unsigned int fill_len, byte fill_bit)
 
 void addCompressSeq(runData *param, byte toAdd)
 {
-  realloc(param->compress->compressed_seq, sizeof(byte*) * (param->compress->size + 1));
+  param->compress->compressed_seq = realloc(param->compress->compressed_seq, sizeof(byte*) * (param->compress->size + 1));
   param->compress->compressed_seq[param->compress->size] = toAdd; //the reason we can use param->compress->size as the index is because it is not updated till after we store the current data
   param->compress->size++;
 }
@@ -341,6 +341,8 @@ compressResult * bbcCompress(byte * to_compress, int size){
     updateRun(param);
 
   }
+
+  printf("size of compress run is %d\n: ", param->compress->size);
 
   return param->compress;
 }

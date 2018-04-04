@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "BBCUtil.h"
 #include "BBCCompressor.h"
 
 
