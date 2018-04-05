@@ -230,11 +230,53 @@ void storeCompress(runData *param)
   }
 }
 
+void printRunData(runData *param)
+{
+  printf("PRINT RUN DATA: \n");
+  printf("fill_len is: %u\n", param->fill_len);
+  printf("tail_len is: %u\n", param->tail_len);
+  printf("run_type is: %u\n", param->run_type);
+  printf("byte_type is: %u\n", param->byte_type);
+
+  int i;
+
+  printf("tail store is: [");
+  for(i = 0; i < param->tail_len; i++)
+  {
+    printf("%u",param->tail_store[i]);
+    if(i < param->tail_len-1)
+    {
+      printf(", ");
+    }
+  }
+  printf("]\n");
+}
+
+void printCompressData(compressResult *param)
+{
+  printf("compressed sequence: [");
+
+  int i;
+  for(i = 0; i < param->size; i++)
+  {
+    printf("%u",param->compressed_seq[i]);
+    if(i < param->size-1)
+    {
+      printf(", ");
+    }
+  }
+  printf("]\n");
+}
+
 int endRun(runData *param)
 {
   if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
   {
     storeCompress(param);
+
+    printf("run is done, ");
+    printCompressData(param->compress);
+
     startNewRun(param);
     return 0;
   }
@@ -247,12 +289,20 @@ int endRun(runData *param)
       if(param->byte_type != param->fill_bit)
       {
         storeCompress(param);
+
+        printf("run is done, ");
+        printCompressData(param->compress);
+
         startNewRun(param);
         return 0;
       }
       else if(param->tail_len > 0)
       {
         storeCompress(param);
+
+        printf("run is done, ");
+        printCompressData(param->compress);
+
         startNewRun(param);
         return 0;
       }
@@ -260,12 +310,17 @@ int endRun(runData *param)
     else if(param->tail_len > TAIL_LIMIT)
     {
       storeCompress(param);
+
+      printf("run is done, ");
+      printCompressData(param->compress);
+
       startNewRun(param);
       return 0;
     }
   }
   return 1;
 }
+
 
 //////////////////////////////////////////////////
 //                  main function               //
@@ -337,10 +392,12 @@ compressResult * bbcCompress(byte * to_compress, int size){
       param->tail_len++;
 
     }
-
+    printRunData(param);
     updateRun(param);
 
   }
+
+  endRun(param);
 
   printf("size of compress run is %d\n: ", param->compress->size);
 

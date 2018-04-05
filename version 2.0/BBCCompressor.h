@@ -109,6 +109,10 @@ void getByteType(runData *param);
 
 int updateRun(runData *param);
 
+void printRunData(runData *param);
+
+void printCompressData(compressResult *param);
+
 int endRun(runData *param);
 
 void storeCompress(runData *param);
