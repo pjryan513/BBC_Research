@@ -16,6 +16,9 @@
 #define ODD_BYTE 2
 #define MESSY_BYTE 3
 
+#define ZERO_ODD_BYTE 10
+#define ONE_ODD_BYTE 11
+
 #define TYPE_1 0
 #define TYPE_2 1
 #define TYPE_3 2

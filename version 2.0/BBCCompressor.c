@@ -274,7 +274,7 @@ int endRun(runData *param)
   {
     storeCompress(param);
 
-    printf("run is done, ");
+    printf("---run is done--- \n");
     printCompressData(param->compress);
 
     startNewRun(param);
@@ -290,7 +290,7 @@ int endRun(runData *param)
       {
         storeCompress(param);
 
-        printf("run is done, ");
+        printf("---run is done---\n");
         printCompressData(param->compress);
 
         startNewRun(param);
@@ -300,7 +300,7 @@ int endRun(runData *param)
       {
         storeCompress(param);
 
-        printf("run is done, ");
+        printf("---run is done---\n");
         printCompressData(param->compress);
 
         startNewRun(param);
@@ -311,7 +311,7 @@ int endRun(runData *param)
     {
       storeCompress(param);
 
-      printf("run is done, ");
+      printf("---run is done---\n");
       printCompressData(param->compress);
 
       startNewRun(param);
@@ -369,14 +369,23 @@ compressResult * bbcCompress(byte * to_compress, int size){
     //If the run is new both fill and tail lens will be zero and we need to choose a new fill bit
     if(param->fill_len <= 0 && param->tail_len <= 0)
     {
-      if(param->byte_type == ONE_BYTE)
+      if(param->byte_type == ONE_BYTE || param->byte_type == ONE_ODD_BYTE)
       {
-        param->fill_bit = param->byte_type;
+        param->fill_bit = 1;
       }
       else
       {
         param->fill_len = ZERO_BYTE;
       }
+    }
+
+    if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
+    {
+      param->byte_type = MESSY_BYTE;
+    }
+    else if(param->fill_bit == 1 && param->byte_type == ZERO_ODD_BYTE)
+    {
+      param->byte_type = MESSY_BYTE;
     }
 
     if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE) //if we are a fill we need to increment fill_len
