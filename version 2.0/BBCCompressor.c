@@ -399,7 +399,7 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
   storeCompress(param);
 
-  printf("size of compress run is %d\n: ", param->compress->size);
+  printf("size of compress run is %d:\n ", param->compress->size);
 
   return param->compress;
 }
