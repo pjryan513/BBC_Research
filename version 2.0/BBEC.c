@@ -74,10 +74,9 @@ int updateRun(runData *param)
   }
   else if(param->run_type == TYPE_3)
   {
-    if(param->byte_type == ONE_ODD_BYTE || param->byte_type == ZERO_ODD_BYTE)
+    if(param->fill_len > 127)
     {
       param->run_type = TYPE_4;
-      param->odd_pos = findOddPos(param->next_byte, param->fill_bit);
       return 0;
     }
   }
@@ -129,6 +128,34 @@ void startNewRun(runData * param)
   }
 
   param->run_type = TYPE_1;
+}
+
+baseExpo expoDecomp(int num)
+{
+  int x = num;
+  base = 1;
+  expo = 1;
+
+  int i;
+  for(i = 7; i > 2; i--)
+  {
+    int j = 1;
+    while(pow(i,j) < x)
+    {
+      j++;
+    }
+    j--;
+    if(x-pow(i,j) > x-pow(base,expo))
+    {
+      base = i;
+      expo = j;
+    }
+  }
+  baseExpo *ret = (baseExpo*) malloc(sizeof(baseExpo));
+  ret->base = base;
+  ret->expo = expo;
+
+  return baseExpo;
 }
 
 void storeCompress(runData *param)
@@ -211,24 +238,34 @@ void storeCompress(runData *param)
   }
   else if(param->run_type == TYPE_4)
   {
-    byte header = TYPE_4_HEADER;
-
-    byte temp = param->fill_bit;
-    temp <<= 3;
-    header |= temp;
-
-    header |= param->odd_pos;
-
-    addCompressSeq(param,header);
-
-    compressResult *four_fill = fillStore(param->fill_len, param->fill_bit);
-    int i;
-    for(i = 0; i < four_fill->size; i++)
+    int num = param->fill_len;
+    while(num > 127)
     {
-      addCompressSeq(param, four_fill->compressed_seq[i]);
+      byte header = TYPE_4_HEADER;
+
+      byte temp = param->fill_bit;
+      temp <<= 3;
+      header |= temp;
+
+      baseExpo * bE = expoDecomp(param->fill_len);
+
+      header |= bE->base;
+
+      addCompressSeq(param,header);
+
+      addCompressSeq(param,bE->expo);
+
+      num -= pow(bE->base,bE->expo);
     }
-    free(four_fill->compressed_seq);
-    free(four_fill);
+
+    if(num < 3)
+    {
+
+    }
+    else
+    {
+      
+    }
   }
 }
 
@@ -272,7 +309,7 @@ void printCompressData(compressResult *param)
 
 int endRun(runData *param)
 {
-  if(param->run_type == TYPE_2 || param->run_type == TYPE_4)
+  if(param->run_type == TYPE_2)
   {
     storeCompress(param);
 
@@ -284,7 +321,6 @@ int endRun(runData *param)
   }
   else
   {
-    
     if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE)
     {
 

@@ -18,19 +18,28 @@ int main(int argc, char * args[])
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
 
 	int fill = 0;
-
+	int option = 0;
 	int i = 0;
-	for(;i < arr_size; i++)
+
+	if(option == 0)
 	{
-		if((rand() % 4) <= 2)
-		{
-			to_compress[i] = fill;
-		}
-		else
-		{
-			to_compress[i] = rand() % 256;	
-		} 
 		
+		for(;i < arr_size; i++)
+		{
+			if((rand() % 4) <= 2)
+			{
+				to_compress[i] = fill;
+			}
+			else
+			{
+				to_compress[i] = rand() % 256;	
+			} 	
+		}
+	}
+	else if(option == 1)
+	{
+		byte temp[] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
+		to_compress = temp;
 	}
 
 	printf("the uncompressed seq:\n");
