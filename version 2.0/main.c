@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include "BBCCompressor.h"
+#include "BBEC.h"
+#include "util.h"
 
 
 int main(int argc, char * args[])
@@ -52,16 +55,16 @@ int main(int argc, char * args[])
 		}
 	}
 	printf("\n");
-	printf("size in bytes: %u\n", arr_size);
+	printf("size in bytes: %u\n\n", arr_size);
 
 
-	printf("--------	original bbc comrpession:	started	-----------\n\n");
+	printf("--------	bbc compression:	started	-----------\n\n");
 	compressResult * og_compress = bbcCompress(to_compress, arr_size);
-	printf("--------	original bbc compression:	done	-----------\n\n");
+	printf("--------	bbc compression:	done	-----------\n\n");
 
 	//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
 
-	printf("compressed seq done by original BBC:\n");
+	printf("BBC:\n");
 	for(i=0; i < og_compress->size; i++)
 	{
 		printf("%u", og_compress->compressed_seq[i]);
@@ -69,8 +72,23 @@ int main(int argc, char * args[])
 		{
 			printf(", ");
 		}
-
 	}
 	printf("\n");	
-	printf("total size in bytes: %u\n", og_compress->size);
+	printf("total size in bytes: %u\n\n", og_compress->size);
+
+	printf("--------	bbec compression:	started	-----------\n\n");
+	compressResult * bbec = BBEC(to_compress, arr_size);
+	printf("--------	bbec compression:	done	-----------\n\n");
+
+	printf("BBEC:\n");
+	for(i=0; i < bbec->size; i++)
+	{
+		printf("%u", bbec->compressed_seq[i]);
+		if(i < bbec->size -1)
+		{
+			printf(", ");
+		}
+	}
+	printf("\n");	
+	printf("total size in bytes: %u\n\n", bbec->size);
 }
