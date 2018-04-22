@@ -15,13 +15,13 @@ int main(int argc, char * args[])
 
 
 	//size of the array of bytes to be compressed
-	int arr_size = 10;
+	int arr_size = 1000;
 
 	//the array of bytes to be compressed
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
 
 	int fill = 0;
-	int option = 0;
+	int option = 2;
 	int i = 0;
 
 	if(option == 0)
@@ -44,6 +44,13 @@ int main(int argc, char * args[])
 		byte temp[] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
 		to_compress = temp;
 	}
+	else if(option == 2)
+	{
+		for(i = 0; i < arr_size; i++)
+		{
+			to_compress[i] = fill;
+		}
+	}
 
 	printf("the uncompressed seq:\n");
 	for(i = 0; i < arr_size; i++)
@@ -60,11 +67,12 @@ int main(int argc, char * args[])
 
 	printf("--------	bbc compression:	started	-----------\n\n");
 	compressResult * og_compress = bbcCompress(to_compress, arr_size);
+	double bbc_ratio = (double)og_compress->size / (double)arr_size;
 	printf("--------	bbc compression:	done	-----------\n\n");
 
 	//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
 
-	printf("BBC:\n");
+	printf("BBC output:\n");
 	for(i=0; i < og_compress->size; i++)
 	{
 		printf("%u", og_compress->compressed_seq[i]);
@@ -73,14 +81,15 @@ int main(int argc, char * args[])
 			printf(", ");
 		}
 	}
-	printf("\n");	
-	printf("total size in bytes: %u\n\n", og_compress->size);
+	printf("\n\n");	
+	printf("total size in bytes: %u\ncompression ratio %f\n\n", og_compress->size, bbc_ratio);
 
 	printf("--------	bbec compression:	started	-----------\n\n");
 	compressResult * bbec = BBEC(to_compress, arr_size);
+	double bbec_ratio = (double)bbec->size / (double)arr_size;
 	printf("--------	bbec compression:	done	-----------\n\n");
 
-	printf("BBEC:\n");
+	printf("BBEC output:\n");
 	for(i=0; i < bbec->size; i++)
 	{
 		printf("%u", bbec->compressed_seq[i]);
@@ -89,6 +98,6 @@ int main(int argc, char * args[])
 			printf(", ");
 		}
 	}
-	printf("\n");	
-	printf("total size in bytes: %u\n\n", bbec->size);
+	printf("\n\n");	
+	printf("total size in bytes: %u\ncompression ratio %f\n", bbec->size, bbec_ratio);
 }

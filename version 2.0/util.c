@@ -18,9 +18,11 @@ void getByteType(runData *param){
   byte b = param->next_byte;
   if(param->next_byte == 0){
     param->byte_type = ZERO_BYTE;
+    param->comp_fill_bit = 0;
   }
   else if(param->next_byte == 255){
     param->byte_type = ONE_BYTE;
+    param->comp_fill_bit = 1;
   }
   //if fill bit == 0, then we can use the ODD OBE BYTE. if the fill bit == 1, then we can use the ODD ZERO BYTE.
   //what if we are starting a new run? (NO FILL BIT DEFINED YET).
@@ -29,14 +31,17 @@ void getByteType(runData *param){
   //if(param->fill_bit == 0){
   else if(b == 1 || b == 2 || b == 4 || b == 8 || b == 16 || b == 32 || b == 64 || b == 128){
     param->byte_type =  ZERO_ODD_BYTE;
+    param->comp_fill_bit = 0;
   }
   //}
   else if(b == 254 || b == 253 || b == 251 || b ==247 || b ==239 || b ==223 || b == 191 || b == 127){
     param->byte_type = ONE_ODD_BYTE;
+    param->comp_fill_bit = 1;
   }
 
   else{
     param->byte_type = MESSY_BYTE;
+    param->comp_fill_bit = 0; //just being filled to pretty any unsee null errors, should go unused
   }
 }
 
@@ -94,6 +99,8 @@ void printRunData(runData *param)
   printf("PRINT RUN DATA: \n");
   printf("fill_len is: %u\n", param->fill_len);
   printf("tail_len is: %u\n", param->tail_len);
+  printf("fill_bit is: %u\n", param->fill_bit);
+  printf("comp_fill_bit is: %u\n", param->comp_fill_bit);
   printf("run_type is: %u\n", param->run_type);
   printf("byte_type is: %u\n", param->byte_type);
 

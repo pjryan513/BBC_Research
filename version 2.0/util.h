@@ -77,6 +77,9 @@ typedef struct runData {
 	//EX: store it, change run_type or start a new run
 	unsigned int byte_type;
 
+	//the fill bit type of the current byte to compress, used for comparision.
+	unsigned int comp_fill_bit;
+
 	byte *tail_store;
 
 	//Pointer to the struture that keeps track of the output information for the compression algorithm.

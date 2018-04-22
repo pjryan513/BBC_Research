@@ -52,6 +52,7 @@ void startNewRunEx(runData * param)
     param->tail_store[i] = NEWRUN;  
   }
 
+  param->fill_bit = 0;
   param->run_type = TYPE_1;
 }
 
@@ -172,7 +173,7 @@ void storeCompressEx(runData *param)
       temp <<= 3;
       header |= temp;
 
-      baseExpo * bE = expoDecomp(param->fill_len);
+      baseExpo * bE = expoDecomp(num);
 
       header |= bE->base;
 
@@ -188,10 +189,11 @@ void storeCompressEx(runData *param)
     tempRun->tail_len = param->tail_len;
     tempRun->tail_store = param->tail_store;
     tempRun->byte_type = param->byte_type;
+    tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
     tempRun->compress->compressed_seq = param->compress->compressed_seq;
-    tempRun->compress->size = param->compress->size;
+    tempRun->compress->size = param->compress->size;;
 
-    if(num > 0)
+    if(num > 0 || param->tail_len > 0)
     {
 
       if(num < 3)
@@ -222,33 +224,15 @@ int endRunEx(runData *param)
     startNewRunEx(param);
     return 0;
   }
-  else
+  /*else if(param->fill_len >= FILL_LIMIT_TYPE_3)
   {
-    if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE)
-    {
-
-      if(param->byte_type != param->fill_bit)
-      {
-        storeCompressEx(param);
-
-        //printf("---run is done---\n");
-        //printCompressData(param->compress);
-
-        startNewRunEx(param);
-        return 0;
-      }
-      else if(param->tail_len > 0)
-      {
-        storeCompressEx(param);
-
-        //printf("---run is done---\n");
-        //printCompressData(param->compress);
-
-        startNewRunEx(param);
-        return 0;
-      }
-    }
-    else if(param->tail_len > TAIL_LIMIT)
+    storeCompressEx(param);
+    startNewRunEx(param);
+    return 0;
+  }*/
+  else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
+  {
+    if(param->comp_fill_bit != param->fill_bit)
     {
       storeCompressEx(param);
 
@@ -258,6 +242,26 @@ int endRunEx(runData *param)
       startNewRunEx(param);
       return 0;
     }
+    else if(param->tail_len > 0)
+    {
+      storeCompressEx(param);
+
+      //printf("---run is done---\n");
+      //printCompressData(param->compress);
+
+      startNewRunEx(param);
+      return 0;
+    }
+  }
+  else if(param->tail_len > TAIL_LIMIT)
+  {
+    storeCompressEx(param);
+
+    //printf("---run is done---\n");
+    //printCompressData(param->compress);
+
+    startNewRunEx(param);
+    return 0;
   }
   return 1;
 }
@@ -316,7 +320,7 @@ compressResult * BBEC(byte * to_compress, int size){
       }
       else
       {
-        param->fill_len = ZERO_BYTE;
+        param->fill_len = 0;
       }
     }
 
