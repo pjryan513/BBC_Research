@@ -17,6 +17,15 @@ int main(int argc, char * args[])
 	//size of the array of bytes to be compressed
 	int arr_size = 1000;
 
+	//if need to print raw
+	int printRaw = 1;
+
+	//if need to print BBC compress
+	int printBBC = 1;
+
+	//if need to print BBEC compress
+	int printBBEC = 1;
+
 	//the array of bytes to be compressed
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
 
@@ -52,13 +61,16 @@ int main(int argc, char * args[])
 		}
 	}
 
-	printf("the uncompressed seq:\n");
-	for(i = 0; i < arr_size; i++)
+	if(printRaw)
 	{
-		printf("%u",to_compress[i]);
-		if(i < arr_size -1)
+		printf("the uncompressed seq:\n");
+		for(i = 0; i < arr_size; i++)
 		{
-			printf(", ");
+			printf("%u",to_compress[i]);
+			if(i < arr_size -1)
+			{
+				printf(", ");
+			}
 		}
 	}
 	printf("\n");
@@ -72,13 +84,16 @@ int main(int argc, char * args[])
 
 	//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
 
-	printf("BBC output:\n");
-	for(i=0; i < og_compress->size; i++)
+	if(printBBC)
 	{
-		printf("%u", og_compress->compressed_seq[i]);
-		if(i < og_compress->size -1)
+		printf("BBC output:\n");
+		for(i=0; i < og_compress->size; i++)
 		{
-			printf(", ");
+			printf("%u", og_compress->compressed_seq[i]);
+			if(i < og_compress->size -1)
+			{
+				printf(", ");
+			}
 		}
 	}
 	printf("\n\n");	
@@ -89,13 +104,16 @@ int main(int argc, char * args[])
 	double bbec_ratio = (double)bbec->size / (double)arr_size;
 	printf("--------	bbec compression:	done	-----------\n\n");
 
-	printf("BBEC output:\n");
-	for(i=0; i < bbec->size; i++)
+	if(printBBEC)
 	{
-		printf("%u", bbec->compressed_seq[i]);
-		if(i < bbec->size -1)
+		printf("BBEC output:\n");
+		for(i=0; i < bbec->size; i++)
 		{
-			printf(", ");
+			printf("%u", bbec->compressed_seq[i]);
+			if(i < bbec->size -1)
+			{
+				printf(", ");
+			}
 		}
 	}
 	printf("\n\n");	
