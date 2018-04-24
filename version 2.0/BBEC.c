@@ -9,6 +9,7 @@
 
 #include "BBEC.h"
 #include "util.h"
+
 //////////////////////////////////////////////////
 //              helper function                 //
 //////////////////////////////////////////////////
@@ -191,7 +192,7 @@ void storeCompressEx(runData *param)
     tempRun->byte_type = param->byte_type;
     tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
     tempRun->compress->compressed_seq = param->compress->compressed_seq;
-    tempRun->compress->size = param->compress->size;;
+    tempRun->compress->size = param->compress->size;
 
     if(num > 0 || param->tail_len > 0)
     {
@@ -230,6 +231,15 @@ int endRunEx(runData *param)
     startNewRunEx(param);
     return 0;
   }*/
+  else if(param->byte_type == TYPE_3 || param->byte_type == TYPE_4)
+  {
+    if(param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
+    {
+      storeCompressEx(param);
+
+      startNewRunEx(param);
+    }
+  }
   else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
   {
     if(param->comp_fill_bit != param->fill_bit)
@@ -324,18 +334,23 @@ compressResult * BBEC(byte * to_compress, int size){
       }
     }
 
-    if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
+    /*if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
     {
       param->byte_type = MESSY_BYTE;
     }
     else if(param->fill_bit == 1 && param->byte_type == ZERO_ODD_BYTE)
     {
       param->byte_type = MESSY_BYTE;
-    }
+    }*/
+
+    /*if((param->run_type == TYPE_3 || param->run_type == TYPE_4) && (param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE))
+    {
+      param->byte_type = MESSY_BYTE;
+    }*/
 
     if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE) //if we are a fill we need to increment fill_len
     {
-      if(param->byte_type == param->fill_bit)
+      if(param->comp_fill_bit == param->fill_bit)
       {
         param->fill_len++;
       }

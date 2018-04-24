@@ -287,7 +287,7 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE) //if we are a fill we need to increment fill_len
     {
-      if(param->byte_type == param->fill_bit)
+      if(param->comp_fill_bit == param->fill_bit)
       {
         param->fill_len++;
       }
