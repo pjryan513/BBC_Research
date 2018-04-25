@@ -15,7 +15,7 @@ int main(int argc, char * args[])
 
 
 	//size of the array of bytes to be compressed
-	int arr_size = 300;
+	int arr_size = 1000;
 
 	//if need to print raw
 	int printRaw = 0;
