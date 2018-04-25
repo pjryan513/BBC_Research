@@ -15,22 +15,22 @@ int main(int argc, char * args[])
 
 
 	//size of the array of bytes to be compressed
-	int arr_size = 1000;
+	int arr_size = 300;
 
 	//if need to print raw
-	int printRaw = 1;
+	int printRaw = 0;
 
 	//if need to print BBC compress
 	int printBBC = 1;
 
 	//if need to print BBEC compress
-	int printBBEC = 1;
+	int printBBEC = 0;
 
 	//the array of bytes to be compressed
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
 
 	int fill = 0;
-	int option = 0;
+	int option = 2;
 	int i = 0;
 	int fill_percent = 50;
 
