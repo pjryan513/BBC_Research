@@ -167,20 +167,20 @@ int endRun(runData *param)
   {
     storeCompress(param);
 
-    //printf("---run is done--- \n");
-    //printCompressData(param->compress);
+    printf("---run is done--- \n");
+    printCompressData(param->compress);
 
     startNewRun(param);
     return 0;
   }
-  else if(param->fill_len >= FILL_LIMIT_TYPE_3)
+  /*else if(param->fill_len >= FILL_LIMIT_TYPE_3)
   {
     storeCompress(param);
-    //printf("---run is done--- \n");
-    //printCompressData(param->compress);
+    printf("---run is done--- \n");
+    printCompressData(param->compress);
     startNewRun(param);
     return 0;
-  } 
+  } */
   else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
   {
 
@@ -188,8 +188,8 @@ int endRun(runData *param)
     {
       storeCompress(param);
 
-      //printf("---run is done---\n");
-      //printCompressData(param->compress);
+      printf("---run is done---\n");
+      printCompressData(param->compress);
 
       startNewRun(param);
       return 0;
@@ -198,8 +198,8 @@ int endRun(runData *param)
     {
       storeCompress(param);
 
-      //printf("---run is done---\n");
-      //printCompressData(param->compress);
+      printf("---run is done---\n");
+      printCompressData(param->compress);
 
       startNewRun(param);
       return 0;
@@ -209,8 +209,8 @@ int endRun(runData *param)
   {
     storeCompress(param);
 
-    //printf("---run is done---\n");
-    //printCompressData(param->compress);
+    printf("---run is done---\n");
+    printCompressData(param->compress);
 
     startNewRun(param);
     return 0;
@@ -299,7 +299,7 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     }
     updateRun(param);
-    //printRunData(param);
+    printRunData(param);
 
   }
 

@@ -237,6 +237,9 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
+      //printf("---run is done--- \n");
+      //printCompressData(param->compress);
+
       startNewRunEx(param);
     }
   }
