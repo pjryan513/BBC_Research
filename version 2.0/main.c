@@ -30,7 +30,7 @@ int main(int argc, char * args[])
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
 
 	int fill = 0;
-	int option = 0;
+	int option = 2;
 	int i = 0;
 	int fill_percent = 50;
 
