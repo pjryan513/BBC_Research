@@ -219,8 +219,8 @@ int endRunEx(runData *param)
   {
     storeCompressEx(param);
 
-    //printf("---run is done--- \n");
-    //printCompressData(param->compress);
+    printf("---run is done--- \n");
+    printCompressData(param->compress);
 
     startNewRunEx(param);
     return 0;
@@ -237,8 +237,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      //printf("---run is done--- \n");
-      //printCompressData(param->compress);
+      printf("---run is done--- \n");
+      printCompressData(param->compress);
 
       startNewRunEx(param);
     }
@@ -249,8 +249,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      //printf("---run is done---\n");
-      //printCompressData(param->compress);
+      printf("---run is done---\n");
+      printCompressData(param->compress);
 
       startNewRunEx(param);
       return 0;
@@ -259,8 +259,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      //printf("---run is done---\n");
-      //printCompressData(param->compress);
+      printf("---run is done---\n");
+      printCompressData(param->compress);
 
       startNewRunEx(param);
       return 0;
@@ -270,8 +270,8 @@ int endRunEx(runData *param)
   {
     storeCompressEx(param);
 
-    //printf("---run is done---\n");
-    //printCompressData(param->compress);
+    printf("---run is done---\n");
+    printCompressData(param->compress);
 
     startNewRunEx(param);
     return 0;
@@ -300,6 +300,8 @@ compressResult * BBEC(byte * to_compress, int size){
   param->compress = (compressResult *) malloc(sizeof(compressResult));
   param->compress->compressed_seq = (byte *) malloc(sizeof(byte));
   param->compress->size = 0;
+
+  startNewRunEx(param);
 
   int i;
 
@@ -365,7 +367,8 @@ compressResult * BBEC(byte * to_compress, int size){
 
     }
     updateRunEx(param);
-    //printRunData(param);
+
+    printRunData(param);
 
   }
 

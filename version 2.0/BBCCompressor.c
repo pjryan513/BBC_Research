@@ -167,8 +167,8 @@ int endRun(runData *param)
   {
     storeCompress(param);
 
-    printf("---run is done--- \n");
-    printCompressData(param->compress);
+    //printf("---run is done--- \n");
+    //printCompressData(param->compress);
 
     startNewRun(param);
     return 0;
@@ -180,8 +180,8 @@ int endRun(runData *param)
     {
       storeCompress(param);
 
-      printf("---run is done---\n");
-      printCompressData(param->compress);
+      //printf("---run is done---\n");
+      //printCompressData(param->compress);
 
       startNewRun(param);
       return 0;
@@ -190,8 +190,8 @@ int endRun(runData *param)
     {
       storeCompress(param);
 
-      printf("---run is done---\n");
-      printCompressData(param->compress);
+      //printf("---run is done---\n");
+      //printCompressData(param->compress);
 
       startNewRun(param);
       return 0;
@@ -201,8 +201,8 @@ int endRun(runData *param)
   {
     storeCompress(param);
 
-    printf("---run is done---\n");
-    printCompressData(param->compress);
+    //printf("---run is done---\n");
+    //printCompressData(param->compress);
 
     startNewRun(param);
     return 0;
@@ -291,7 +291,7 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
     }
     updateRun(param);
-    printRunData(param);
+    //printRunData(param);
 
   }
 
