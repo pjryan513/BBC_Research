@@ -219,8 +219,8 @@ int endRunEx(runData *param)
   {
     storeCompressEx(param);
 
-    printf("---run is done--- \n");
-    printCompressData(param->compress);
+    //printf("---run is done--- \n");
+    //printCompressData(param->compress);
 
     startNewRunEx(param);
     return 0;
@@ -237,8 +237,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      printf("---run is done--- \n");
-      printCompressData(param->compress);
+      //printf("---run is done--- \n");
+      //printCompressData(param->compress);
 
       startNewRunEx(param);
     }
@@ -249,8 +249,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      printf("---run is done---\n");
-      printCompressData(param->compress);
+      //printf("---run is done---\n");
+      //printCompressData(param->compress);
 
       startNewRunEx(param);
       return 0;
@@ -259,8 +259,8 @@ int endRunEx(runData *param)
     {
       storeCompressEx(param);
 
-      printf("---run is done---\n");
-      printCompressData(param->compress);
+      //printf("---run is done---\n");
+      //printCompressData(param->compress);
 
       startNewRunEx(param);
       return 0;
@@ -270,8 +270,8 @@ int endRunEx(runData *param)
   {
     storeCompressEx(param);
 
-    printf("---run is done---\n");
-    printCompressData(param->compress);
+    //printf("---run is done---\n");
+    //printCompressData(param->compress);
 
     startNewRunEx(param);
     return 0;
@@ -321,11 +321,6 @@ compressResult * BBEC(byte * to_compress, int size){
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
-    if(i > 0)
-    { //done for an end case that only can occur when i == 0
-      endRunEx(param);
-    }
-    
     //If the run is new both fill and tail lens will be zero and we need to choose a new fill bit
     if(param->fill_len <= 0 && param->tail_len <= 0)
     {
@@ -339,6 +334,11 @@ compressResult * BBEC(byte * to_compress, int size){
       }
     }
 
+    if(i > 0)
+    { //done for an end case that only can occur when i == 0
+      endRunEx(param);
+    }
+    
     /*if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
     {
       param->byte_type = MESSY_BYTE;
@@ -368,7 +368,7 @@ compressResult * BBEC(byte * to_compress, int size){
     }
     updateRunEx(param);
 
-    printRunData(param);
+    //printRunData(param);
 
   }
 

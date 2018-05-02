@@ -175,7 +175,6 @@ int endRun(runData *param)
   }
   else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
   {
-
     if(param->comp_fill_bit != param->fill_bit)
     {
       storeCompress(param);
