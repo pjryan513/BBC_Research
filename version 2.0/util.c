@@ -100,6 +100,7 @@ void printRunData(runData *param)
   printf("fill_len is: %u\n", param->fill_len);
   printf("tail_len is: %u\n", param->tail_len);
   printf("fill_bit is: %u\n", param->fill_bit);
+  printf("next_byte is: %u\n", param->next_byte);
   printf("comp_fill_bit is: %u\n", param->comp_fill_bit);
   printf("run_type is: %u\n", param->run_type);
   printf("byte_type is: %u\n", param->byte_type);

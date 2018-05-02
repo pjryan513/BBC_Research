@@ -15,16 +15,16 @@ int main(int argc, char * args[])
 
 
 	//size of the array of bytes to be compressed
-	int arr_size = 100;
+	int arr_size = 1000000;
 
 	//if need to print raw
-	int printRaw = 1;
+	int printRaw = 0;
 
 	//if need to print BBC compress
-	int printBBC = 1;
+	int printBBC = 0;
 
 	//if need to print BBEC compress
-	int printBBEC = 1;
+	int printBBEC = 0;
 
 	//the array of bytes to be compressed
 	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
@@ -32,7 +32,7 @@ int main(int argc, char * args[])
 	int fill = 0;
 	int option = 0;
 	int i = 0;
-	int fill_percent = 50;
+	int fill_percent = 75;
 
 	if(option == 0)
 	{
@@ -60,6 +60,11 @@ int main(int argc, char * args[])
 		{
 			to_compress[i] = fill;
 		}
+	}
+	else if(option == 3)
+	{
+		byte temp[] = {164, 0, 0, 30, 206, 0, 0, 0, 0, 0, 248, 51, 0, 85, 0, 0, 0, 49, 117, 0, 0, 164, 0, 243, 0, 18, 0, 115, 6, 245, 108, 75, 0, 160, 0, 0, 0, 148, 0, 0, 0, 0, 225, 0, 0, 11, 0, 212, 3, 155, 0, 0, 184, 0, 87, 0, 187, 0, 79, 140, 0, 141, 251, 0, 0, 169, 0, 125, 0, 0, 0, 0, 73, 0, 134, 0, 0, 0, 69, 0, 0, 0, 16, 0, 0, 247, 59, 102, 0, 229, 0, 0, 0, 166, 0, 0, 0, 0, 0, 0};
+		to_compress = temp;
 	}
 
 	if(printRaw)

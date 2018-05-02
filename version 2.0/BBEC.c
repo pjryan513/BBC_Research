@@ -217,6 +217,7 @@ int endRunEx(runData *param)
 {
   if(param->run_type == TYPE_2)
   {
+    //printf("------ending 1--------\n");
     storeCompressEx(param);
 
     //printf("---run is done--- \n");
@@ -225,16 +226,11 @@ int endRunEx(runData *param)
     startNewRunEx(param);
     return 0;
   }
-  /*else if(param->fill_len >= FILL_LIMIT_TYPE_3)
-  {
-    storeCompressEx(param);
-    startNewRunEx(param);
-    return 0;
-  }*/
-  else if(param->byte_type == TYPE_3 || param->byte_type == TYPE_4)
+  if(param->run_type == TYPE_3 || param->run_type == TYPE_4)
   {
     if(param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
     {
+      //printf("------ending 2--------\n");
       storeCompressEx(param);
 
       //printf("---run is done--- \n");
@@ -243,10 +239,12 @@ int endRunEx(runData *param)
       startNewRunEx(param);
     }
   }
-  else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
+  if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
   {
     if(param->comp_fill_bit != param->fill_bit)
     {
+      //printf("------ending 3--------\n");
+
       storeCompressEx(param);
 
       //printf("---run is done---\n");
@@ -255,8 +253,9 @@ int endRunEx(runData *param)
       startNewRunEx(param);
       return 0;
     }
-    else if(param->tail_len > 0)
+    if(param->tail_len > 0)
     {
+      //printf("------ending 4--------\n");
       storeCompressEx(param);
 
       //printf("---run is done---\n");
@@ -266,8 +265,9 @@ int endRunEx(runData *param)
       return 0;
     }
   }
-  else if(param->tail_len > TAIL_LIMIT)
+  if(param->tail_len > TAIL_LIMIT)
   {
+    //printf("------ending 5--------\n");
     storeCompressEx(param);
 
     //printf("---run is done---\n");
@@ -373,8 +373,6 @@ compressResult * BBEC(byte * to_compress, int size){
   }
 
   storeCompressEx(param);
-
-  //printf("size of compress run is %d:\n ", param->compress->size);
 
   return param->compress;
 }
