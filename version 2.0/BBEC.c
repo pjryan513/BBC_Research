@@ -64,14 +64,14 @@ baseExpo * expoDecomp(int num)
   int expo = 1;
 
   int i;
-  for(i = 7; i > 1; i--)
+  for(i = 9; i > 1; i--)
   {
     int j = 1;
-    while(pow(i,j) < x)
+    while(pow(i,j) < x && j < 129)
     {
       j++;
     }
-    j--;
+    j--; //we dec because we need to go until we are beyond x so take a step back and that is the closest value
     if(x-pow(i,j) < x-pow(base,expo))
     {
       base = i;
@@ -165,51 +165,68 @@ void storeCompressEx(runData *param)
   }
   else if(param->run_type == TYPE_4)
   {
-    int num = param->fill_len;
-    while(num > 127)
+    int comp_style = 0;
+
+    if(comp_style == 0)
     {
-      byte header = TYPE_4_HEADER;
-
-      byte temp = param->fill_bit;
-      temp <<= 3;
-      header |= temp;
-
-      baseExpo * bE = expoDecomp(num);
-
-      header |= bE->base;
-
-      addCompressSeq(param,header);
-
-      addCompressSeq(param,(byte) bE->expo);
-
-      num -= pow(bE->base,bE->expo);
-    }
-
-    runData * tempRun = (runData*) malloc(sizeof(runData));
-    tempRun->fill_len = num;
-    tempRun->tail_len = param->tail_len;
-    tempRun->tail_store = param->tail_store;
-    tempRun->byte_type = param->byte_type;
-    tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
-    tempRun->compress->compressed_seq = param->compress->compressed_seq;
-    tempRun->compress->size = param->compress->size;
-
-    if(num > 0 || param->tail_len > 0)
-    {
-
-      if(num < 3)
+      int num = param->fill_len;
+      while(num > 127)
       {
-        tempRun->run_type = TYPE_1;   
+        byte header = TYPE_4_HEADER;
+
+        byte temp = param->fill_bit;
+        temp <<= 3;
+        header |= temp;
+
+        baseExpo * bE = expoDecomp(num);
+
+        //we substract two because for our purpose having base below 2 is useless.
+        //Example base is 5 but we can store it as 3 because we know that 0 and 1 spots are not needed
+        // so 0 means 2, 1 means 3 ect ect
+        header |= (bE->base - 2);  
+
+        addCompressSeq(param,header);
+
+        addCompressSeq(param,(byte) (bE->expo -2));
+
+        num -= pow(bE->base,bE->expo);
+
+        if((bE->base - 2) < 0 || (bE->expo -2))
+        {
+          printf("HOLD ON: base and expo below zero, NOT GOOD\n");
+        }
       }
-      else
+
+      runData * tempRun = (runData*) malloc(sizeof(runData));
+      tempRun->fill_len = num;
+      tempRun->tail_len = param->tail_len;
+      tempRun->tail_store = param->tail_store;
+      tempRun->byte_type = param->byte_type;
+      tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
+      tempRun->compress->compressed_seq = param->compress->compressed_seq;
+      tempRun->compress->size = param->compress->size;
+
+      if(num > 0 || param->tail_len > 0)
       {
-        tempRun->run_type = TYPE_3;
+
+        if(num < 3)
+        {
+          tempRun->run_type = TYPE_1;   
+        }
+        else
+        {
+          tempRun->run_type = TYPE_3;
+        }
+        storeCompressEx(tempRun); 
       }
-      storeCompressEx(tempRun); 
+      param->compress->compressed_seq = tempRun->compress->compressed_seq;
+      param->compress->size = tempRun->compress->size;
+      free(tempRun);
     }
-    param->compress->compressed_seq = tempRun->compress->compressed_seq;
-    param->compress->size = tempRun->compress->size;
-    free(tempRun);
+  }
+  else if(comp_style == 1)
+  {
+
   }
 }
 
