@@ -72,10 +72,10 @@ baseExpo * expoDecomp(int num)
   int expo = 1;
 
   int i;
-  for(i = 9; i > 1; i--)
+  for(i = 6; i > 1; i--)
   {
     int j = 1;
-    while(pow(i,j) < x && j < 129)
+    while(pow(i,j) < x && j < 17)
     {
       j++;
     }
@@ -338,7 +338,7 @@ compressResult * BBEC(byte * to_compress, int size){
   //The size of curr_run array
   
   startNewRunEx(param);
-  
+
   for(i = 0; i < param->size; i++)
   {
     //printf("starting bbccompress\n");
@@ -399,5 +399,9 @@ compressResult * BBEC(byte * to_compress, int size){
 
   //printf("size of compress run is %d:\n ", param->compress->size);
 
-  return param->compress;
+  compressResult * retResult = param->compress;
+
+  free(param);
+
+  return retResult;
 }

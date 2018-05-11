@@ -14,8 +14,13 @@ int main(int argc, char * args[])
 	srand(time(NULL));
 
 
-	//size of the array of bytes to be compressed
+	int k ;
+	int resultNum = 20;
+	compressResult * resultArrayOG = (compressResult*) malloc(sizeof(compressResult) * resultNum);
+	compressResult * resultArrayBBEC = (compressResult*) malloc(sizeof(compressResult) * resultNum);
+
 	int arr_size = 10000000;
+
 
 	//if need to print raw
 	int printRaw = 0;
@@ -25,86 +30,133 @@ int main(int argc, char * args[])
 
 	//if need to print BBEC compress
 	int printBBEC = 0;
-
-	//the array of bytes to be compressed
-	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
-
-	int fill = 0;
-	int option = 0;
-	int i = 0;
-	int fill_percent = 98;
-
-	if(option == 0)
-	{
-		
-		for(;i < arr_size; i++)
-		{
-			if((rand() % 100) <= fill_percent)
-			{
-				to_compress[i] = fill;
-			}
-			else
-			{
-				to_compress[i] = rand() % 256;	
-			} 	
-		}
-	}
 	
-	if(printRaw)
+	for(k = 0; k <= resultNum; k++)
 	{
-		printf("the uncompressed seq:\n");
-		for(i = 0; i < arr_size; i++)
+
+		//size of the array of bytes to be compressed
+			
+			
+
+		//the array of bytes to be compressed
+		unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
+
+		int fill = 0;
+		int option = 0;
+		int i = 0;
+		//printf("k is : %u\n", k);
+		int fill_percent = k * 5;
+
+		if(option == 0)
 		{
-			printf("%u",to_compress[i]);
-			if(i < arr_size -1)
+				
+			for(;i < arr_size; i++)
 			{
-				printf(", ");
+				if((rand() % 100) <= fill_percent)
+				{
+					to_compress[i] = fill;
+				}
+				else
+				{
+					to_compress[i] = rand() % 256;	
+				} 	
 			}
 		}
-	}
-	printf("\n");
-	printf("size in bytes: %u\n", arr_size);
-
-
-	printf("--------	bbc compression:	started	-----------\n\n");
-	compressResult * og_compress = bbcCompress(to_compress, arr_size);
-	double bbc_ratio = (double)og_compress->size / (double)arr_size;
-	printf("--------	bbc compression:	done	-----------\n");
-
-	//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
-
-	if(printBBC)
-	{
-		printf("BBC output:\n");
-		for(i=0; i < og_compress->size; i++)
+			
+		if(printRaw)
 		{
-			printf("%u", og_compress->compressed_seq[i]);
-			if(i < og_compress->size -1)
+			printf("the uncompressed seq:\n");
+			for(i = 0; i < arr_size; i++)
 			{
-				printf(", ");
+				printf("%u",to_compress[i]);
+				if(i < arr_size -1)
+				{
+					printf(", ");
+				}
 			}
 		}
-	}
-	printf("\n");	
-	printf("total size in bytes: %u\ncompression ratio %f\n\n", og_compress->size, bbc_ratio);
+		//printf("\n");
+		//printf("size in bytes: %u\n", arr_size);
 
-	printf("--------	bbec compression:	started	-----------\n\n");
-	compressResult * bbec = BBEC(to_compress, arr_size);
-	double bbec_ratio = (double)bbec->size / (double)arr_size;
-	printf("--------	bbec compression:	done	-----------\n");
 
-	if(printBBEC)
-	{
-		printf("BBEC output:\n");
-		for(i=0; i < bbec->size; i++)
+		printf("--------	bbc compression:	started	-----------\n");
+		compressResult * og_compress = bbcCompress(to_compress, arr_size);
+		resultArrayOG[k].size = og_compress->size;
+		resultArrayOG[k].compressed_seq = og_compress->compressed_seq;
+		double bbc_ratio = (double)og_compress->size / (double)arr_size;
+		printf("--------	bbc compression:	done	-----------\n\n");
+
+		//compressResult * newCompress = patBBCCompress(to_compress, arr_size);
+
+		if(printBBC)
 		{
-			printf("%u", bbec->compressed_seq[i]);
-			if(i < bbec->size -1)
+			printf("BBC output:\n");
+			for(i=0; i < og_compress->size; i++)
 			{
-				printf(", ");
+				printf("%u", og_compress->compressed_seq[i]);
+				if(i < og_compress->size -1)
+				{
+					printf(", ");
+				}
 			}
 		}
+		//printf("\n");	
+		//printf("total size in bytes: %u\ncompression ratio %f\n\n", og_compress->size, bbc_ratio);
+
+		printf("--------	bbec compression:	started	-----------\n");
+		compressResult * bbec = BBEC(to_compress, arr_size);
+		resultArrayBBEC[k].size = bbec->size;
+		resultArrayBBEC[k].compressed_seq = bbec->compressed_seq;
+		double bbec_ratio = (double)bbec->size / (double)arr_size;
+		printf("--------	bbec compression:	done	-----------\n\n");
+
+		if(printBBEC)
+		{
+			printf("BBEC output:\n");
+			for(i=0; i < bbec->size; i++)
+			{
+				printf("%u", bbec->compressed_seq[i]);
+				if(i < bbec->size -1)
+				{
+					printf(", ");
+				}
+			}
+		}
+		//printf("\n");	
+		//printf("total size in bytes: %u\ncompression ratio %f\n", bbec->size, bbec_ratio);
+
+		//printf("\n");
+
+		free(to_compress);
+		free(og_compress);
+		free(bbec);
+		
 	}
-	printf("\n");	
-	printf("total size in bytes: %u\ncompression ratio %f\n", bbec->size, bbec_ratio);
+
+	printf("-----Analyse of Results-----\n\n");
+	int i;
+	for(i = 0; i <= resultNum; i++)
+	{
+		double numOG = resultArrayOG[i].size;
+		double numBBEC = resultArrayBBEC[i].size;
+
+
+		printf("for fill percent of %u ", (i * 5));
+		if(numOG == numBBEC)
+		{
+			printf("BBEC and BBC where equal in compression\n");
+		}
+		else if(numOG > numBBEC)
+		{
+			printf("BBEC was more effiecient in compression by: %f bytes\n", numOG - numBBEC);
+		}
+		else
+		{
+			printf("BBC was more eefiecient in compression by: %f\n", numOG/numBBEC);
+		}
+		printf("BBEC size: %f | BBC size: %f\n", numBBEC, numOG);
+		printf("\n");
+	}
+
+
 }

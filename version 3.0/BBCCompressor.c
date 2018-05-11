@@ -298,5 +298,9 @@ compressResult * bbcCompress(byte * to_compress, int size){
 
   //printf("size of compress run is %d:\n ", param->compress->size);
 
-  return param->compress;
+  compressResult * retResult = param->compress;
+
+  free(param);
+
+  return retResult;
 }
