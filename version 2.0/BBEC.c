@@ -341,7 +341,6 @@ compressResult * BBEC(byte * to_compress, int size){
     {
       if(param->byte_type == ONE_BYTE || param->byte_type == ONE_ODD_BYTE)
       {
-        printf("\nhere\n");
         param->fill_bit = 1;
       }
       else
