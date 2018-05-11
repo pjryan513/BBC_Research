@@ -263,18 +263,18 @@ compressResult * bbcCompress(byte * to_compress, int size){
       }
       else
       {
-        param->fill_len = 0;
+        param->fill_bit = 0;
       }
     }
 
-    if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
+    /*if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
     {
       param->byte_type = MESSY_BYTE;
     }
     else if(param->fill_bit == 1 && param->byte_type == ZERO_ODD_BYTE)
     {
       param->byte_type = MESSY_BYTE;
-    }
+    }*/
 
     if(param->byte_type == ZERO_BYTE || param->byte_type == ONE_BYTE) //if we are a fill we need to increment fill_len
     {

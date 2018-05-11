@@ -135,6 +135,8 @@ void storeCompressEx(runData *param)
   }
   else if(param->run_type == TYPE_3)
   {
+    //printf("------TYPE_3 store -----------\n");
+
     //blank type 3 header
     byte header = TYPE_3_HEADER;
 
@@ -165,6 +167,8 @@ void storeCompressEx(runData *param)
   }
   else if(param->run_type == TYPE_4)
   {
+    //printf("----------TYPE_4-----------\n");
+
     int comp_style = 0;
 
     if(comp_style == 0)
@@ -191,42 +195,43 @@ void storeCompressEx(runData *param)
 
         num -= pow(bE->base,bE->expo);
 
-        if((bE->base - 2) < 0 || (bE->expo -2))
+        if((bE->base - 2) < 0 || (bE->expo -2) < 0)
         {
-          printf("HOLD ON: base and expo below zero, NOT GOOD\n");
+          printf("HOLD ON: base and/or expo below zero, NOT GOOD\n");
         }
       }
-
-      runData * tempRun = (runData*) malloc(sizeof(runData));
-      tempRun->fill_len = num;
-      tempRun->tail_len = param->tail_len;
-      tempRun->tail_store = param->tail_store;
-      tempRun->byte_type = param->byte_type;
-      tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
-      tempRun->compress->compressed_seq = param->compress->compressed_seq;
-      tempRun->compress->size = param->compress->size;
-
+      if(num > 3)
+      {
+        param->compress->compressed_seq[param->compress->size-1] |= 128;
+        addCompressSeq(param,num);
+        num = 0;
+      }
       if(num > 0 || param->tail_len > 0)
       {
+        runData * tempRun = (runData*) malloc(sizeof(runData));
+        tempRun->fill_len = num;
+        tempRun->tail_len = param->tail_len;
+        tempRun->tail_store = param->tail_store;
+        tempRun->byte_type = param->byte_type;
+        tempRun->compress = (compressResult *) malloc(sizeof(compressResult));
+        tempRun->compress->compressed_seq = param->compress->compressed_seq;
+        tempRun->compress->size = param->compress->size;
 
-        if(num < 3)
-        {
-          tempRun->run_type = TYPE_1;   
-        }
-        else
-        {
-          tempRun->run_type = TYPE_3;
-        }
+
+        tempRun->run_type = TYPE_1;   
+        
         storeCompressEx(tempRun); 
-      }
-      param->compress->compressed_seq = tempRun->compress->compressed_seq;
-      param->compress->size = tempRun->compress->size;
-      free(tempRun);
-    }
-  }
-  else if(comp_style == 1)
-  {
 
+        param->compress->compressed_seq = tempRun->compress->compressed_seq;
+        param->compress->size = tempRun->compress->size;
+        free(tempRun);
+      }
+      
+    }
+    else if(comp_style == 1)
+    {
+
+    }
   }
 }
 
@@ -243,25 +248,23 @@ int endRunEx(runData *param)
     startNewRunEx(param);
     return 0;
   }
-  if(param->run_type == TYPE_3 || param->run_type == TYPE_4)
+  if((param->run_type == TYPE_3 || param->run_type == TYPE_4) && (param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE))
   {
-    if(param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
-    {
-      //printf("------ending 2--------\n");
-      storeCompressEx(param);
+    
+    //printf("------ending 2--------\n");
+    storeCompressEx(param);
 
-      //printf("---run is done--- \n");
-      //printCompressData(param->compress);
+    //printf("---run is done--- \n");
+    //printCompressData(param->compress);
 
-      startNewRunEx(param);
-    }
+    startNewRunEx(param);
+    
   }
-  if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
+  else if(param->byte_type == ONE_BYTE || param->byte_type == ZERO_BYTE  || param->byte_type == ZERO_ODD_BYTE || param->byte_type == ONE_ODD_BYTE)
   {
     if(param->comp_fill_bit != param->fill_bit)
     {
       //printf("------ending 3--------\n");
-
       storeCompressEx(param);
 
       //printf("---run is done---\n");
@@ -296,15 +299,11 @@ int endRunEx(runData *param)
   return 1;
 }
 
-
 //////////////////////////////////////////////////
 //                  main function               //
 //////////////////////////////////////////////////
 
-
 compressResult * BBEC(byte * to_compress, int size){
-
-  //these methods gather information from the header
 
   runData * param = (runData *) malloc(sizeof(runData));
 
@@ -322,38 +321,33 @@ compressResult * BBEC(byte * to_compress, int size){
 
   int i;
 
-  //This array will hold the result of the compression algorithm
-  //param->curr_run = (byte*) malloc(sizeof(byte)*size);
-  
-  //The size of curr_run array
-  
+  //int k = 0;
+
   for(i = 0; i < param->size; i++)
   {
-    //printf("starting bbccompress\n");
-    //these functions should go in rawbitmapreader.c, for each column there should be a new file.
-    //sprintf(compfile, "compressed_%d", i);
-    //param->colFile = fopen("filewrite/compressed%d.txt", i, "w");
     
     param->next_byte = param->toCompress[i];//get the next byte from the block sequence of bytes
 
     getByteType(param);//get the type of next_byte: zero byte, one byte, odd byte ect ect
 
     //If the run is new both fill and tail lens will be zero and we need to choose a new fill bit
-    if(param->fill_len <= 0 && param->tail_len <= 0)
-    {
-      if(param->byte_type == ONE_BYTE || param->byte_type == ONE_ODD_BYTE)
-      {
-        param->fill_bit = 1;
-      }
-      else
-      {
-        param->fill_len = 0;
-      }
-    }
 
     if(i > 0)
     { //done for an end case that only can occur when i == 0
       endRunEx(param);
+    }
+
+    if(param->fill_len <= 0 && param->tail_len <= 0)
+    {
+      if(param->byte_type == ONE_BYTE || param->byte_type == ONE_ODD_BYTE)
+      {
+        printf("\nhere\n");
+        param->fill_bit = 1;
+      }
+      else
+      {
+        param->fill_bit = 0;
+      }
     }
     
     /*if(param->fill_bit == 0 && param->byte_type == ONE_ODD_BYTE)
@@ -385,7 +379,12 @@ compressResult * BBEC(byte * to_compress, int size){
     }
     updateRunEx(param);
 
-    //printRunData(param);
+
+    /*if(k > 110)
+    {
+      printRunData(param);
+    }
+    k++;*/
 
   }
 
