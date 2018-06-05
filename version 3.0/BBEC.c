@@ -203,11 +203,12 @@ void storeCompressEx(runData *param)
     byte temp = param->fill_bit;
     temp <<= 3;
     header |= temp;
+    header |= param->tail_len;
 
     addCompressSeq(param,header);
 
     int follow_fill = 0;
-    while(num > 127)
+    while(num > 255)
     {
 
       int baExpo = 0;
@@ -251,6 +252,7 @@ void storeCompressEx(runData *param)
       addCompressSeq(param, param->tail_store[i]);
     }
 
+
   }
 }
 
@@ -289,8 +291,9 @@ int endRunEx(runData *param)
       return 0;
     }
   }
-  else if(param->run_type == TYPE_5 && param->tail_len > TAIL_LIMIT_FIVE)
+  else if(param->run_type == TYPE_5 && param->tail_len >= TAIL_LIMIT_FIVE)
   {
+    printf("tail len is %d\n", param->tail_len);
     storeCompressEx(param);
 
     startNewRunEx(param);
