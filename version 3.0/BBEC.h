@@ -1,7 +1,7 @@
 //BBCCompressor.h
 
-#ifndef BBC_COMPRESSOR
-#define BBC_COMPRESSOR
+#ifndef BBEC
+#define BBEC
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -28,6 +28,8 @@ void storeCompressEx(runData *param);
 
 void startNewRunEx(runData *param);
 
-compressResult * bbcCompressEx(byte *to_compress, int size);
+compressResult * bbecRun(byte *to_compress, int size);
+
+void compressUsingBBEC(byte *to_compress, int size);
 
 #endif

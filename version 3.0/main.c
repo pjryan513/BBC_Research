@@ -3,12 +3,12 @@
 #include <time.h>
 #include <math.h>
 
-#include "BBCCompressor.h"
+#include "BBC.h"
 #include "BBEC.h"
 #include "util.h"
 
 
-compressResult * BBEC(byte * to_compress, int size);
+//compressResult * BBEC(byte * to_compress, int size);
 
 
 //testMain is used to debug the BBEC and BBC algorithms.  
@@ -40,7 +40,7 @@ void testMain()
 		int option = 0;
 		int i = 0;
 		//printf("k is : %u\n", k);
-		int fill_percent = 100;
+		int fill_percent = 20;
 
 		if(option == 0)
 		{
@@ -80,7 +80,7 @@ void testMain()
 		//printf("total size in bytes: %u\ncompression ratio %f\n\n", og_compress->size, bbc_ratio);
 
 		printf("--------	bbc compression:	started	-----------\n");
-		compressResult * og_compress = bbcCompress(to_compress, arr_size);
+		compressResult * og_compress = bbcRun(to_compress, arr_size);
 		resultArrayOG[k].size = og_compress->size;
 		resultArrayOG[k].compressed_seq = og_compress->compressed_seq;
 		//double bbc_ratio = (double)og_compress->size / (double)arr_size;
@@ -103,7 +103,7 @@ void testMain()
 		printf("\n\n");
 
 		printf("--------	bbec compression:	started	-----------\n");
-		compressResult * bbec = BBEC(to_compress, arr_size);
+		compressResult * bbec = bbecRun(to_compress, arr_size);
 		resultArrayBBEC[k].size = bbec->size;
 		resultArrayBBEC[k].compressed_seq = bbec->compressed_seq;
 		//double bbec_ratio = (double)bbec->size / (double)arr_size;
@@ -122,6 +122,43 @@ void testMain()
 			}
 		}
 		printf("\n");
+}
+
+void testMain2()
+{
+
+	int arr_size = 1000;
+	//the array of bytes to be compressed
+	unsigned char * to_compress = (unsigned char *) malloc(sizeof(unsigned char) * arr_size);
+
+	int fill = 0;
+	int option = 0;
+	int i = 0;
+	//printf("k is : %u\n", k);
+	int fill_percent = 20;
+
+	if(option == 0)
+	{
+			
+		for(;i < arr_size; i++)
+		{
+			if((rand() % 100) <= fill_percent)
+			{
+				to_compress[i] = fill;
+			}
+			else
+			{
+				to_compress[i] = rand() % 256;	
+			} 	
+		}
+
+		for(i = arr_size - 5; i < arr_size; i++)
+		{
+			to_compress[i] = rand() % 256;
+		}
+	}
+
+	compressUsingBBEC(to_compress, arr_size);
 }
 
 
@@ -153,7 +190,7 @@ int main(int argc, char * args[])
 
 	if(argc > 1)
 	{
-		testMain();
+		testMain2();
 	}
 	else
 	{
@@ -207,7 +244,7 @@ int main(int argc, char * args[])
 
 
 		printf("--------	bbc compression:	started	-----------\n");
-		compressResult * og_compress = bbcCompress(to_compress, arr_size);
+		compressResult * og_compress = bbcRun(to_compress, arr_size);
 		resultArrayOG[k].size = og_compress->size;
 		resultArrayOG[k].compressed_seq = og_compress->compressed_seq;
 		//double bbc_ratio = (double)og_compress->size / (double)arr_size;
@@ -231,7 +268,7 @@ int main(int argc, char * args[])
 		//printf("total size in bytes: %u\ncompression ratio %f\n\n", og_compress->size, bbc_ratio);
 
 		printf("--------	bbec compression:	started	-----------\n");
-		compressResult * bbec = BBEC(to_compress, arr_size);
+		compressResult * bbec = bbecRun(to_compress, arr_size);
 		resultArrayBBEC[k].size = bbec->size;
 		resultArrayBBEC[k].compressed_seq = bbec->compressed_seq;
 		//double bbec_ratio = (double)bbec->size / (double)arr_size;

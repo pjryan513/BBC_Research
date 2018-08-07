@@ -317,7 +317,7 @@ int endRunEx(runData *param)
 //////////////////////////////////////////////////
 
 
-compressResult * BBEC(byte * to_compress, int size){
+compressResult * bbecRun(byte * to_compress, int size){
 
   //these methods gather information from the header
 
@@ -407,4 +407,34 @@ compressResult * BBEC(byte * to_compress, int size){
   free(param);
 
   return retResult;
+}
+
+/*Used to interface with the Bitmap-Engine research project
+  run by David Chiu of the University of Puget Sound */
+void compressUsingBBEC(byte * to_compress, int size){
+
+  compressResult * result = bbecRun(to_compress, size);
+  int printBBEC = 1;
+
+  int i;
+
+  printf("size is: %u\n", result->size);
+
+  int write_to_file = 1;
+
+  if(write_to_file)
+  {
+    FILE *fp = fopen("bbec_result.txt","w");
+
+    for(i = 0; i < result->size; i++)
+    {
+      fprintf(fp, "%x", (int)result->compressed_seq[i]);
+
+      if(i < result->size -1) fprintf(fp, ", ");
+      //if(!(i % 10) && i != 0) fprintf(fp, "\n");
+    }
+
+    fclose(fp);
+  }
+
 }

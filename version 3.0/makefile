@@ -1,8 +1,8 @@
 all : 
-	gcc -Wall -c BBCCompressor.c
+	gcc -Wall -c BBC.c
 	gcc -Wall -c BBEC.c
 	gcc -Wall -c util.c
-	gcc -Wall -o main main.c BBCCompressor.o BBEC.o util.o -lpthread -lm
+	gcc -Wall -o main main.c BBC.o BBEC.o util.o -lpthread -lm
 
 clean:
 	rm -f *.0 main

@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "BBCCompressor.h"
+#include "BBC.h"
 #include "util.h"
 
 //////////////////////////////////////////////////
@@ -215,7 +215,7 @@ int endRun(runData *param)
 //////////////////////////////////////////////////
 
 
-compressResult * bbcCompress(byte * to_compress, int size){
+compressResult * bbcRun(byte * to_compress, int size){
 
   //these methods gather information from the header
 
