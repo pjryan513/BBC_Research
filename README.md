@@ -10,7 +10,7 @@ The algorithm compresses raw data into portions called runs, there are four kind
 
 ## How BBEC works
 
-The Bit-aligned Bitmap Exponentail Compression algorithm is the same as the BBC algorithm expect it adds a fifth run-type.  The fifth run type is used to store fills (long sequence of 0s or 1s) in an expetional format.
+The Bit-aligned Bitmap Exponentail Compression algorithm is the same as the BBC algorithm expect it adds a fifth run-type.  The fifth run type is used to store fills (long sequence of 0s or 1s) in an expetional format.  In BBC the largest amount of information that a single run can hold is limited by type three runs.  These runs use a linear storage format to store their data.  This means that at most one byte, using linear storage, can hold is 127 bits of information (the most siginificant bit is used for byte tracking in type three).  Adding on the fifth run type allows for large storage of fill bits in a single byte.  The structure of BBEC is laid out below.
 
 ### Fifth run-type strucutre
 #### Header byte
